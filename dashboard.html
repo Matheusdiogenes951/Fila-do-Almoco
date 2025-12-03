@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Sistema de Faltas</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Sistema de Faltas</h1>
+    <div id="userInfo"></div>
+    <button id="logoutBtn">Sair</button>
+  </header>
+
+  <main class="card">
+    <h2>Dashboard</h2>
+    <p>Usuário: <span id="dashUser"></span></p>
+    <p>Tipo: <span id="dashRole"></span></p>
+    <p>Número de alunos: <span id="totalAlunos">0</span></p>
+    <p>Total de faltas: <span id="totalFaltas">0</span></p>
+
+    <div class="buttons">
+      <a class="btn" href="alunos.html">Alunos</a>
+      <a class="btn" href="faltas.html">Faltas</a>
+    </div>
+  </main>
+</body>
+</html>
