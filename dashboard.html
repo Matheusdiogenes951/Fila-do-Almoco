@@ -21,9 +21,28 @@
     <p>Número de alunos: <span id="totalAlunos">0</span></p>
     <p>Total de faltas: <span id="totalFaltas">0</span></p>
 
+    <div class="dashboard-filters">
+      <label>Selecionar Turma:
+        <select id="dashTurmaFilter">
+          <option value="">-- Todas as turmas --</option>
+          <option>DS 1</option>
+          <option>DS 2</option>
+          <option>DS 3</option>
+          <option>CTB 1</option>
+          <option>CTB 2</option>
+          <option>CTB 3</option>
+          <option>MULT 1</option>
+          <option>MULT 2</option>
+          <option>MULT 3</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="dashAlunosList" class="dashboard-alunos"></div>
+
     <div class="buttons">
-      <a class="btn" href="alunos.html">Alunos</a>
-      <a class="btn" href="faltas.html">Faltas</a>
+      <a class="btn" href="alunos.html">Gerenciar Alunos</a>
+      <a class="btn" href="faltas.html">Registrar Faltas</a>
     </div>
   </main>
 </body>

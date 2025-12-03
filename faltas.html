@@ -8,19 +8,35 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>Registrar Faltas</h1>
-    <a href="dashboard.html" class="btn small">Voltar</a>
-    <div id="userInfo"></div>
-  </header>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div id="sidebarUserInfo" class="sidebar-user"></div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="alunos.html" class="nav-link">Alunos</a>
+        <a href="faltas.html" class="nav-link active">Faltas</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <button id="logoutBtn" class="logout-btn">Sair</button>
+      </div>
+    </aside>
 
-  <main class="card">
-    <div id="faltasList"></div>
+    <main class="main-content">
+      <header class="top-bar">
+        <h1>Registrar Faltas</h1>
+      </header>
 
-    <section class="card small-card">
-      <h3>Histórico</h3>
-      <div id="historicoList"></div>
-    </section>
-  </main>
+      <div class="card">
+        <div id="faltasList"></div>
+
+        <section class="card small-card">
+          <h3>Histórico</h3>
+          <div id="historicoList"></div>
+        </section>
+      </div>
+    </main>
+  </div>
 </body>
 </html>

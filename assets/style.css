@@ -121,6 +121,119 @@ button {
 .del-btn:hover {
   background: rgba(201, 75, 75, 0.06);
 }
+
+/* Dashboard turma filter */
+.dashboard-filters {
+  margin: 20px 0;
+  padding: 16px;
+  background: #f9fdfb;
+  border-radius: 8px;
+  border-left: 4px solid var(--accent);
+}
+.dashboard-filters label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+.dashboard-filters select {
+  padding: 8px 12px;
+  border: 1px solid #e6efe8;
+  border-radius: 6px;
+  flex: 1;
+  max-width: 300px;
+}
+.dashboard-alunos {
+  margin-top: 20px;
+}
+.dashboard-alunos div {
+  padding: 12px;
+  border-bottom: 1px solid #e6efe8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/* App Container (sidebar layout) */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 220px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  box-shadow: 2px 0 8px rgba(46, 139, 87, 0.15);
+}
+.sidebar-top {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.sidebar-user {
+  font-weight: 600;
+  font-size: 14px;
+  word-break: break-word;
+}
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+}
+.nav-link {
+  display: block;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-left-color: #fff;
+}
+.sidebar-bottom {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+.logout-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  font-size: 14px;
+}
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.main-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: 20px;
+}
+.top-bar {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(46, 139, 87, 0.08);
+}
+.top-bar h1 {
+  margin: 0;
+  color: var(--accent);
+}
+
 /* Landing Page (index.html) */
 .landing-container {
   display: flex;
@@ -219,5 +332,63 @@ footer.footer {
   .btn-hero {
     padding: 16px 32px;
     font-size: 18px;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    padding: 12px;
+  }
+  .sidebar-top {
+    flex: 1;
+    border-bottom: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px;
+  }
+  .sidebar-nav {
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    flex: 2;
+  }
+  .nav-link {
+    padding: 8px 12px;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-link.active {
+    border-left: none;
+    border-bottom-color: #fff;
+  }
+  .sidebar-bottom {
+    padding: 12px;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .logout-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 12px;
+  }
+  .top-bar {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  .dashboard-filters label {
+    margin-bottom: 12px;
+  }
+  .controls {
+    flex-direction: column;
+    gap: 10px;
   }
 }

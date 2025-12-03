@@ -218,9 +218,15 @@ function initPages() {
   var lb = document.getElementById('logoutBtn');
   if (lb) lb.addEventListener('click', logoutUser);
 
-  // mostrar usuário em header
-  var uinfo = document.getElementById('userInfo');
+  // mostrar usuário no sidebar
+  var sidebarUser = document.getElementById('sidebarUserInfo');
   var lu = getLoggedUser();
+  if (sidebarUser && lu) {
+    sidebarUser.textContent = 'Olá, ' + lu.username + '\n(' + lu.role + ')';
+  }
+
+  // mostrar usuário em header (legacy)
+  var uinfo = document.getElementById('userInfo');
   if (uinfo) {
     if (lu) uinfo.textContent = lu.username + ' (' + lu.role + ')';
     else uinfo.textContent = '';
@@ -238,6 +244,13 @@ function initPages() {
     var sum = 0; var all = carregarAlunos();
     for (var i = 0; i < all.length; i++) sum += Number(all[i].faltas) || 0;
     totalFaltas.textContent = sum;
+  }
+
+  // dashboard turma filter
+  var dashTurmaFilter = document.getElementById('dashTurmaFilter');
+  if (dashTurmaFilter) {
+    dashTurmaFilter.addEventListener('change', updateDashAlunosList);
+    updateDashAlunosList();
   }
 
   // alunos page
@@ -266,6 +279,28 @@ function initPages() {
   // faltas page
   updateFaltasList();
   mostrarHistorico('historicoList');
+}
+
+function updateDashAlunosList() {
+  var filter = document.getElementById('dashTurmaFilter');
+  var t = filter ? filter.value : '';
+  var list = carregarAlunos();
+  var out = [];
+  for (var i = 0; i < list.length; i++) {
+    var a = list[i];
+    if (t && a.turma !== normalizarTurma(t)) continue;
+    out.push(a);
+  }
+  var cont = document.getElementById('dashAlunosList');
+  if (cont) {
+    cont.innerHTML = '';
+    for (var i = 0; i < out.length; i++) {
+      var a = out[i];
+      var div = document.createElement('div');
+      div.innerHTML = '<strong>' + a.nome + '</strong> <span class="muted">(' + a.turma + ')</span> - Faltas: ' + a.faltas;
+      cont.appendChild(div);
+    }
+  }
 }
 
 function updateAlunosList() {
