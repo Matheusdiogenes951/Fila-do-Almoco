@@ -145,13 +145,67 @@ function mostrarHistorico(containerId) {
   if (!cont) return;
   var hist = carregarHistorico();
   cont.innerHTML = '';
+  var lu = getLoggedUser();
+  // mostrar do mais recente para o mais antigo
   for (var i = hist.length - 1; i >= 0; i--) {
     var h = hist[i];
     var div = document.createElement('div');
+    div.className = 'history-entry';
     var d = new Date(h.date).toLocaleString();
-    div.innerHTML = d + ' - <strong>' + h.nome + '</strong> (' + h.turma + ') faltas: +' + h.faltasAdded + ' por ' + (h.by || '');
+    var left = document.createElement('div');
+    left.innerHTML = d + ' - <strong>' + h.nome + '</strong> (' + h.turma + ') faltas: +' + h.faltasAdded + ' por ' + (h.by || '');
+    div.appendChild(left);
+    // mostrar botão de apagar apenas para coord
+    if (lu && lu.role === 'coord') {
+      (function(idx){
+        var btn = document.createElement('button');
+        btn.className = 'del-btn';
+        btn.textContent = 'Apagar';
+        btn.addEventListener('click', function(){
+          if (!confirm('Confirma apagar este registro de falta?')) return;
+          apagarFalta(idx);
+        });
+        div.appendChild(btn);
+      })(i);
+    }
     cont.appendChild(div);
   }
+}
+
+// Apaga um registro de histórico de faltas pelo índice no array (index no localStorage)
+function apagarFalta(index) {
+  var hist = carregarHistorico();
+  if (!hist || index < 0 || index >= hist.length) return false;
+  var rec = hist[index];
+  // ajustar faltas do aluno correspondente
+  var alunos = carregarAlunos();
+  for (var i = 0; i < alunos.length; i++) {
+    if (alunos[i].nome === rec.nome && alunos[i].turma === rec.turma) {
+      var cur = Number(alunos[i].faltas) || 0;
+      var sub = Number(rec.faltasAdded) || 0;
+      var novo = cur - sub;
+      if (novo < 0) novo = 0;
+      alunos[i].faltas = novo;
+      break;
+    }
+  }
+  // remover do histórico
+  hist.splice(index, 1);
+  // salvar alterações
+  salvarAlunos(alunos);
+  localStorage.setItem('historico', JSON.stringify(hist));
+  // atualizar UI
+  mostrarHistorico('historicoList');
+  updateFaltasList();
+  updateAlunosList();
+  // atualizar totals no dashboard se existir
+  var totalFaltas = document.getElementById('totalFaltas');
+  if (totalFaltas) {
+    var sum = 0; var all = carregarAlunos();
+    for (var j = 0; j < all.length; j++) sum += Number(all[j].faltas) || 0;
+    totalFaltas.textContent = sum;
+  }
+  return true;
 }
 
 // --- Inicialização por página (liga eventos)
