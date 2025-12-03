@@ -218,9 +218,16 @@ function initPages() {
   var lb = document.getElementById('logoutBtn');
   if (lb) lb.addEventListener('click', logoutUser);
 
-  // mostrar usuário no sidebar
-  var sidebarUser = document.getElementById('sidebarUserInfo');
   var lu = getLoggedUser();
+
+  // dashboard sidebar user info
+  var dashboardUserInfo = document.getElementById('dashboardUserInfo');
+  if (dashboardUserInfo && lu) {
+    dashboardUserInfo.textContent = '👤 ' + lu.username + '\n\n' + (lu.role === 'coord' ? '🔑 Coordenação' : '👨‍🏫 Professor');
+  }
+
+  // mostrar usuário no sidebar (alunos/faltas pages)
+  var sidebarUser = document.getElementById('sidebarUserInfo');
   if (sidebarUser && lu) {
     sidebarUser.textContent = 'Olá, ' + lu.username + '\n(' + lu.role + ')';
   }

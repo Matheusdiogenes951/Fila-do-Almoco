@@ -8,42 +8,54 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>Sistema de Faltas</h1>
-    <div id="userInfo"></div>
-    <button id="logoutBtn">Sair</button>
-  </header>
+  <div class="app-container">
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-top">
+        <div id="dashboardUserInfo" class="sidebar-user-info"></div>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="dashboard.html" class="menu-item active">📊 Dashboard</a>
+        <a href="alunos.html" class="menu-item">👥 Gerenciar Alunos</a>
+        <a href="faltas.html" class="menu-item">📋 Registrar Faltas</a>
+      </nav>
 
-  <main class="card">
-    <h2>Dashboard</h2>
-    <p>Usuário: <span id="dashUser"></span></p>
-    <p>Tipo: <span id="dashRole"></span></p>
-    <p>Número de alunos: <span id="totalAlunos">0</span></p>
-    <p>Total de faltas: <span id="totalFaltas">0</span></p>
+      <div class="sidebar-bottom">
+        <button id="logoutBtn" class="logout-btn">🚪 Sair</button>
+      </div>
+    </aside>
 
-    <div class="dashboard-filters">
-      <label>Selecionar Turma:
-        <select id="dashTurmaFilter">
-          <option value="">-- Todas as turmas --</option>
-          <option>DS 1</option>
-          <option>DS 2</option>
-          <option>DS 3</option>
-          <option>CTB 1</option>
-          <option>CTB 2</option>
-          <option>CTB 3</option>
-          <option>MULT 1</option>
-          <option>MULT 2</option>
-          <option>MULT 3</option>
-        </select>
-      </label>
-    </div>
+    <main class="main-content">
+      <header class="top-bar">
+        <h1>Dashboard</h1>
+      </header>
 
-    <div id="dashAlunosList" class="dashboard-alunos"></div>
+      <div class="card">
+        <p>Usuário: <span id="dashUser"></span></p>
+        <p>Tipo: <span id="dashRole"></span></p>
+        <p>Número de alunos: <span id="totalAlunos">0</span></p>
+        <p>Total de faltas: <span id="totalFaltas">0</span></p>
 
-    <div class="buttons">
-      <a class="btn" href="alunos.html">Gerenciar Alunos</a>
-      <a class="btn" href="faltas.html">Registrar Faltas</a>
-    </div>
-  </main>
+        <div class="dashboard-filters">
+          <label>Selecionar Turma:
+            <select id="dashTurmaFilter">
+              <option value="">-- Todas as turmas --</option>
+              <option>DS 1</option>
+              <option>DS 2</option>
+              <option>DS 3</option>
+              <option>CTB 1</option>
+              <option>CTB 2</option>
+              <option>CTB 3</option>
+              <option>MULT 1</option>
+              <option>MULT 2</option>
+              <option>MULT 3</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="dashAlunosList" class="dashboard-alunos"></div>
+      </div>
+    </main>
+  </div>
 </body>
 </html>
