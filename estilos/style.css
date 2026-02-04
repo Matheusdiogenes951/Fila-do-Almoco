@@ -116,3 +116,15 @@ form input[type=submit]:hover {
     color: #007002;
     font-weight: bold;
 }
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007002;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: 0.3s;
+}
