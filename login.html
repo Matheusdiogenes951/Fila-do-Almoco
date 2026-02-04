@@ -35,6 +35,13 @@
         function entrar() {
             const iemail = document.getElementById("iemail").value;
             const isenha = document.getElementById("isenha").value;
+
+            if (iemail === "Matheus" && isenha === "1234") {
+                alert("Bem-vindo, Matheus!");
+                location.href = "dashboard.html" 
+            } else {
+                alert("Email ou senha incorretos!");
+            }
         }
     </script>
 </body>
