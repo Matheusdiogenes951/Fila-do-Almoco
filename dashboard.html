@@ -1,49 +1,54 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Sistema de Faltas</title>
     <link rel="stylesheet" href="estilos/style.css">
+    <!-- Ícones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body class="dashboard-html">
 
-```
-<!-- HEADER -->
-<header class="dashboard-header">
-    <h1>Painel do Sistema</h1>
-    <a href="index.html" class="btn-sair">Sair</a>
-</header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="user-info">
+            <i class="fa-solid fa-user"></i>
+            <span>Administrador</span>
+        </div>
 
-<!-- CONTEÚDO PRINCIPAL -->
-<main class="dashboard-container">
+        <nav>
+            <a href="#"><i class="fa-solid fa-chart-column"></i></a>
+            <a href="#"><i class="fa-solid fa-calendar-xmark"></i></a>
+            <a href="#"><i class="fa-solid fa-user-graduate"></i></a>
+            <a href="#"><i class="fa-solid fa-gear"></i></a>
+        </nav>
+    </aside>
 
-    <section class="card">
-        <h2>👤 Perfil</h2>
-        <p>Usuário: Administrador</p>
-    </section>
+    <div class="main-content">
 
-    <section class="card">
-        <h2>📊 Faltas</h2>
-        <p>Gerenciar faltas dos alunos</p>
-        <button>Acessar</button>
-    </section>
+        <header class="topbar">
+            <button class="btn-menu" onclick="toggleSidebar()">
+             <i class="fa-solid fa-bars"></i>
+            </button>
+            <h1 class="topbar-title">Painel do Sistema</h1>
+            <a href="index.html" class="btn-sair">Sair</a>
+        </header>
 
-    <section class="card">
-        <h2>👨‍🎓 Alunos</h2>
-        <p>Lista de alunos cadastrados</p>
-        <button>Ver alunos</button>
-    </section>
+        <main class="dashboard-container">
+            <div class="card">
+                <h2>Bem-vindo 👋</h2>
+                <p>Selecione uma opção no menu lateral</p>
+            </div>
+        </main>
 
-    <section class="card">
-        <h2>⚙️ Configurações</h2>
-        <p>Configurações do sistema</p>
-        <button>Configurar</button>
-    </section>
+    </div>
+    <script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('active');
+    }
+    </script>
 
-</main>
-```
 
 </body>
 </html>
