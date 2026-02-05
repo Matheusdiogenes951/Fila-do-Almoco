@@ -136,3 +136,10 @@ button {
     cursor: pointer;
     transition: 0.3s;
 }
+
+/*Dashboard.html*/
+
+.card > button{
+    padding: 20px;
+    width: 30vw;
+}
