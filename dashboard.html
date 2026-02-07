@@ -12,16 +12,31 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()" aria-label="Fechar menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
         <div class="user-info">
             <i class="fa-solid fa-user"></i>
             <span>Administrador</span>
         </div>
 
         <nav>
-            <a href="#"><i class="fa-solid fa-chart-column"></i></a>
-            <a href="#"><i class="fa-solid fa-calendar-xmark"></i></a>
-            <a href="#"><i class="fa-solid fa-user-graduate"></i></a>
-            <a href="#"><i class="fa-solid fa-gear"></i></a>
+            <a href="#" data-view="home" class="nav-link active">
+                <i class="fa-solid fa-chart-column"></i>
+                <span>Fila</span>
+            </a>
+            <a href="#" data-view="faltas" class="nav-link">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Relatórios</span>
+            </a>
+            <a href="#" data-view="alunos" class="nav-link">
+                <i class="fa-solid fa-users"></i>
+                <span>Turmas</span>
+            </a>
+            <a href="#" data-view="config" class="nav-link">
+                <i class="fa-solid fa-clipboard-check"></i>
+                <span>Registrar</span>
+            </a>
         </nav>
     </aside>
 
@@ -36,10 +51,142 @@
         </header>
 
         <main class="dashboard-container">
-            <div class="card">
-                <h2>Bem-vindo 👋</h2>
-                <p>Selecione uma opção no menu lateral</p>
-            </div>
+            <section class="view-panel active" data-view-panel="home">
+                <div class="card wide">
+                    <div class="card-header">
+                        <div>
+                            <h2>Fila do Almoço</h2>
+                            <p>Ordem baseada na soma de faltas por turma</p>
+                        </div>
+                    </div>
+
+                    <div class="queue-grid">
+                        <div class="queue-card">
+                            <h3>Ordem das turmas (menos faltas)</h3>
+                            <ol class="queue-list" id="fila-menos"></ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="view-panel" data-view-panel="faltas">
+                <div class="card wide">
+                    <h2>Faltas por Turma</h2>
+                    <p>Visualize faltas diárias, semanais e mensais</p>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-period="diario">Diárias</button>
+                        <button class="tab-btn" data-period="semanal">Semanais</button>
+                        <button class="tab-btn" data-period="mensal">Mensais</button>
+                    </div>
+
+                    <div class="period-panel active" data-period-panel="diario">
+                        <div class="turma-grid">
+                            <div class="turma-card"><strong>Redes 1</strong><span>2 faltas hoje</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 1</strong><span>1 falta hoje</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 2</strong><span>3 faltas hoje</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 3</strong><span>0 faltas hoje</span></div>
+                            <div class="turma-card"><strong>Multimídia 1</strong><span>1 falta hoje</span></div>
+                            <div class="turma-card"><strong>Multimídia 2</strong><span>2 faltas hoje</span></div>
+                            <div class="turma-card"><strong>Multimídia 3</strong><span>0 faltas hoje</span></div>
+                            <div class="turma-card"><strong>Contabilidade 1</strong><span>2 faltas hoje</span></div>
+                            <div class="turma-card"><strong>Contabilidade 2</strong><span>1 falta hoje</span></div>
+                            <div class="turma-card"><strong>Contabilidade 3</strong><span>3 faltas hoje</span></div>
+                        </div>
+                    </div>
+
+                    <div class="period-panel" data-period-panel="semanal">
+                        <div class="turma-grid">
+                            <div class="turma-card"><strong>Redes 1</strong><span>9 faltas semana</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 1</strong><span>6 faltas semana</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 2</strong><span>12 faltas semana</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 3</strong><span>4 faltas semana</span></div>
+                            <div class="turma-card"><strong>Multimídia 1</strong><span>5 faltas semana</span></div>
+                            <div class="turma-card"><strong>Multimídia 2</strong><span>7 faltas semana</span></div>
+                            <div class="turma-card"><strong>Multimídia 3</strong><span>3 faltas semana</span></div>
+                            <div class="turma-card"><strong>Contabilidade 1</strong><span>8 faltas semana</span></div>
+                            <div class="turma-card"><strong>Contabilidade 2</strong><span>6 faltas semana</span></div>
+                            <div class="turma-card"><strong>Contabilidade 3</strong><span>11 faltas semana</span></div>
+                        </div>
+                    </div>
+
+                    <div class="period-panel" data-period-panel="mensal">
+                        <div class="turma-grid">
+                            <div class="turma-card"><strong>Redes 1</strong><span>28 faltas mês</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 1</strong><span>21 faltas mês</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 2</strong><span>34 faltas mês</span></div>
+                            <div class="turma-card"><strong>Des. Sistemas 3</strong><span>17 faltas mês</span></div>
+                            <div class="turma-card"><strong>Multimídia 1</strong><span>19 faltas mês</span></div>
+                            <div class="turma-card"><strong>Multimídia 2</strong><span>23 faltas mês</span></div>
+                            <div class="turma-card"><strong>Multimídia 3</strong><span>14 faltas mês</span></div>
+                            <div class="turma-card"><strong>Contabilidade 1</strong><span>26 faltas mês</span></div>
+                            <div class="turma-card"><strong>Contabilidade 2</strong><span>20 faltas mês</span></div>
+                            <div class="turma-card"><strong>Contabilidade 3</strong><span>31 faltas mês</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="view-panel" data-view-panel="alunos">
+                <div class="card wide">
+                    <h2>Alunos por Turma</h2>
+                    <p>Adicione ou remova alunos usando a tabela</p>
+
+                    <div class="alunos-toolbar">
+                        <div class="form-row">
+                            <label for="turma-alunos">Turma</label>
+                            <select id="turma-alunos"></select>
+                        </div>
+                        <div class="form-row">
+                            <label for="novo-aluno">Aluno</label>
+                            <input id="novo-aluno" type="text" placeholder="Nome do aluno">
+                        </div>
+                        <div class="form-row actions">
+                            <button type="button" class="btn-add" id="btn-add-aluno">Adicionar aluno</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="data-table" id="tabela-alunos">
+                            <thead>
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>Faltas</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="view-panel" data-view-panel="config">
+                <div class="card wide">
+                    <h2>Registrar Faltas</h2>
+                    <p>Selecione a turma para visualizar os alunos disponíveis</p>
+
+                    <form class="config-form" onsubmit="return false;">
+                        <div class="form-row">
+                            <label for="turma-config">Turma</label>
+                            <select id="turma-config"></select>
+                        </div>
+                        <div class="form-row">
+                            <label for="aluno-config">Aluno</label>
+                            <select id="aluno-config"></select>
+                        </div>
+                        <div class="form-row">
+                            <label for="quantidade">Quantidade</label>
+                            <input id="quantidade" type="number" min="1" value="1">
+                        </div>
+                        <div class="form-row actions">
+                            <button type="button" class="btn-add" id="btn-add-falta">Adicionar falta</button>
+                            <button type="button" class="btn-remove" id="btn-remove-falta">Retirar falta</button>
+                        </div>
+                        <div class="helper-text" id="faltas-atual"></div>
+                    </form>
+                </div>
+            </section>
         </main>
 
     </div>
@@ -47,6 +194,253 @@
     function toggleSidebar() {
         document.querySelector('.sidebar').classList.toggle('active');
     }
+
+    const turmasData = {
+        "Redes 1": [
+            { nome: "Ana Souza", faltas: 1 },
+            { nome: "Bruno Alves", faltas: 0 },
+            { nome: "Carlos Lima", faltas: 2 },
+            { nome: "Daniela Rocha", faltas: 3 }
+        ],
+        "Des. Sistemas 1": [
+            { nome: "Eduardo Santos", faltas: 1 },
+            { nome: "Fernanda Castro", faltas: 0 },
+            { nome: "Guilherme Pires", faltas: 2 },
+            { nome: "Helena Silva", faltas: 1 }
+        ],
+        "Des. Sistemas 2": [
+            { nome: "Igor Nunes", faltas: 3 },
+            { nome: "Júlia Mendes", faltas: 1 },
+            { nome: "Kaio Ramos", faltas: 2 },
+            { nome: "Larissa Prado", faltas: 0 }
+        ],
+        "Des. Sistemas 3": [
+            { nome: "Mateus Ferreira", faltas: 1 },
+            { nome: "Natália Ribeiro", faltas: 2 },
+            { nome: "Otávio Costa", faltas: 3 },
+            { nome: "Patrícia Moura", faltas: 0 }
+        ],
+        "Multimídia 1": [
+            { nome: "Rafaela Duarte", faltas: 1 },
+            { nome: "Samuel Cardoso", faltas: 2 },
+            { nome: "Tainá Barbosa", faltas: 0 },
+            { nome: "Victor Rocha", faltas: 1 }
+        ],
+        "Multimídia 2": [
+            { nome: "Wesley Moraes", faltas: 2 },
+            { nome: "Yasmin Araújo", faltas: 1 },
+            { nome: "Zeca Martins", faltas: 3 },
+            { nome: "Ângela Farias", faltas: 0 }
+        ],
+        "Multimídia 3": [
+            { nome: "Bianca Freitas", faltas: 1 },
+            { nome: "Caio Teixeira", faltas: 2 },
+            { nome: "Diego Braga", faltas: 0 },
+            { nome: "Elisa Santana", faltas: 3 }
+        ],
+        "Contabilidade 1": [
+            { nome: "Felipe Moreira", faltas: 2 },
+            { nome: "Giovana Nogueira", faltas: 1 },
+            { nome: "Henrique Lopes", faltas: 0 },
+            { nome: "Isabela Dias", faltas: 3 }
+        ],
+        "Contabilidade 2": [
+            { nome: "João Pedro", faltas: 1 },
+            { nome: "Kelly Batista", faltas: 2 },
+            { nome: "Lucas Cunha", faltas: 3 },
+            { nome: "Marina Azevedo", faltas: 0 }
+        ],
+        "Contabilidade 3": [
+            { nome: "Nicolas Gomes", faltas: 2 },
+            { nome: "Olívia Moraes", faltas: 1 },
+            { nome: "Pedro Henrique", faltas: 0 },
+            { nome: "Quezia Lima", faltas: 3 }
+        ]
+    };
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const viewPanels = document.querySelectorAll('.view-panel');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const periodPanels = document.querySelectorAll('.period-panel');
+
+    const turmaAlunosSelect = document.getElementById('turma-alunos');
+    const turmaConfigSelect = document.getElementById('turma-config');
+    const alunoConfigSelect = document.getElementById('aluno-config');
+    const tabelaAlunosBody = document.querySelector('#tabela-alunos tbody');
+    const novoAlunoInput = document.getElementById('novo-aluno');
+    const btnAddAluno = document.getElementById('btn-add-aluno');
+    const btnAddFalta = document.getElementById('btn-add-falta');
+    const btnRemoveFalta = document.getElementById('btn-remove-falta');
+    const faltasAtual = document.getElementById('faltas-atual');
+    const filaMenos = document.getElementById('fila-menos');
+
+    function preencherSelectsTurma() {
+        const turmas = Object.keys(turmasData);
+        turmas.forEach((turma) => {
+            const optionAlunos = document.createElement('option');
+            optionAlunos.value = turma;
+            optionAlunos.textContent = turma;
+            turmaAlunosSelect.appendChild(optionAlunos);
+
+            const optionConfig = document.createElement('option');
+            optionConfig.value = turma;
+            optionConfig.textContent = turma;
+            turmaConfigSelect.appendChild(optionConfig);
+        });
+    }
+
+    function preencherSelectAlunos(turma) {
+        alunoConfigSelect.innerHTML = '';
+        (turmasData[turma] || []).forEach((aluno) => {
+            const option = document.createElement('option');
+            option.value = aluno.nome;
+            option.textContent = aluno.nome;
+            alunoConfigSelect.appendChild(option);
+        });
+        atualizarFaltasAtual();
+    }
+
+    function renderTabelaAlunos(turma) {
+        tabelaAlunosBody.innerHTML = '';
+        const alunos = turmasData[turma] || [];
+        alunos.forEach((aluno, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${aluno.nome}</td>
+                <td><span class="badge">${aluno.faltas}</span></td>
+                <td><button class="btn-remove btn-inline" data-index="${index}">Remover</button></td>
+            `;
+            tabelaAlunosBody.appendChild(row);
+        });
+    }
+
+    function calcularTotalFaltas(turma) {
+        return (turmasData[turma] || []).reduce((total, aluno) => total + aluno.faltas, 0);
+    }
+
+    function renderFila() {
+        const turmas = Object.keys(turmasData).map((turma) => ({
+            turma,
+            faltas: calcularTotalFaltas(turma)
+        }));
+        const menos = turmas.slice().sort((a, b) => a.faltas - b.faltas || a.turma.localeCompare(b.turma));
+
+        filaMenos.innerHTML = '';
+
+        menos.forEach((item) => {
+            const row = document.createElement('li');
+            row.innerHTML = `<span>${item.turma}</span><span class="badge">${item.faltas}</span>`;
+            filaMenos.appendChild(row);
+        });
+    }
+
+    function atualizarFaltasAtual() {
+        const turma = turmaConfigSelect.value;
+        const nomeAluno = alunoConfigSelect.value;
+        const aluno = (turmasData[turma] || []).find((item) => item.nome === nomeAluno);
+        if (!aluno) {
+            faltasAtual.textContent = '';
+            return;
+        }
+        faltasAtual.textContent = `Faltas atuais de ${aluno.nome}: ${aluno.faltas}`;
+    }
+
+    function sincronizarTurmaSelecionada(turma) {
+        turmaAlunosSelect.value = turma;
+        turmaConfigSelect.value = turma;
+        preencherSelectAlunos(turma);
+        renderTabelaAlunos(turma);
+        renderFila();
+    }
+
+    navLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const view = link.dataset.view;
+            navLinks.forEach((item) => item.classList.remove('active'));
+            link.classList.add('active');
+            viewPanels.forEach((panel) => {
+                panel.classList.toggle('active', panel.dataset.viewPanel === view);
+            });
+        });
+    });
+
+    tabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const period = button.dataset.period;
+            tabButtons.forEach((item) => item.classList.remove('active'));
+            button.classList.add('active');
+            periodPanels.forEach((panel) => {
+                panel.classList.toggle('active', panel.dataset.periodPanel === period);
+            });
+        });
+    });
+
+    turmaAlunosSelect.addEventListener('change', () => {
+        sincronizarTurmaSelecionada(turmaAlunosSelect.value);
+    });
+
+    turmaConfigSelect.addEventListener('change', () => {
+        sincronizarTurmaSelecionada(turmaConfigSelect.value);
+    });
+
+    alunoConfigSelect.addEventListener('change', atualizarFaltasAtual);
+
+    btnAddAluno.addEventListener('click', () => {
+        const turma = turmaAlunosSelect.value;
+        const nome = novoAlunoInput.value.trim();
+        if (!nome) {
+            return;
+        }
+        turmasData[turma].push({ nome, faltas: 0 });
+        novoAlunoInput.value = '';
+        preencherSelectAlunos(turma);
+        renderTabelaAlunos(turma);
+        renderFila();
+    });
+
+    tabelaAlunosBody.addEventListener('click', (event) => {
+        if (!event.target.classList.contains('btn-inline')) {
+            return;
+        }
+        const turma = turmaAlunosSelect.value;
+        const index = Number(event.target.dataset.index);
+        turmasData[turma].splice(index, 1);
+        preencherSelectAlunos(turma);
+        renderTabelaAlunos(turma);
+        renderFila();
+    });
+
+    btnAddFalta.addEventListener('click', () => {
+        const turma = turmaConfigSelect.value;
+        const nomeAluno = alunoConfigSelect.value;
+        const quantidade = Number(document.getElementById('quantidade').value) || 1;
+        const aluno = turmasData[turma].find((item) => item.nome === nomeAluno);
+        if (!aluno) {
+            return;
+        }
+        aluno.faltas += quantidade;
+        atualizarFaltasAtual();
+        renderTabelaAlunos(turma);
+        renderFila();
+    });
+
+    btnRemoveFalta.addEventListener('click', () => {
+        const turma = turmaConfigSelect.value;
+        const nomeAluno = alunoConfigSelect.value;
+        const quantidade = Number(document.getElementById('quantidade').value) || 1;
+        const aluno = turmasData[turma].find((item) => item.nome === nomeAluno);
+        if (!aluno) {
+            return;
+        }
+        aluno.faltas = Math.max(0, aluno.faltas - quantidade);
+        atualizarFaltasAtual();
+        renderTabelaAlunos(turma);
+        renderFila();
+    });
+
+    preencherSelectsTurma();
+    sincronizarTurmaSelecionada(Object.keys(turmasData)[0]);
     </script>
 
 
