@@ -765,14 +765,31 @@ body.dashboard-html {
     }
 
     .topbar {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: space-between;
+        gap: 8px;
     }
 
     .topbar h1 {
-        width: 100%;
+        width: auto;
+        order: 1;
+        flex: 1;
         text-align: left;
         font-size: 20px;
+        margin: 0;
+    }
+
+    .btn-sair {
+        order: 2;
+        white-space: nowrap;
+        padding: 8px 12px;
+    }
+
+    .btn-menu {
+        order: 3;
+        width: auto;
+        min-width: 40px;
+        text-align: right;
     }
 
     .dashboard-container {
