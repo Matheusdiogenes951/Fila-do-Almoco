@@ -109,6 +109,31 @@ body.index-html {
     box-shadow: 0 12px 25px rgba(0,0,0,0.35);
 }
 
+/* Layout dedicado da home: botao central e footer no fim */
+body.index-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.index-layout #Central {
+    min-height: auto;
+    display: block;
+    padding: 32px 20px 0;
+}
+
+body.index-layout #buttom_i {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+body.index-layout #footer {
+    margin-top: 0;
+}
+
 /* ================== FOOTER ================== */
 
 #footer {
