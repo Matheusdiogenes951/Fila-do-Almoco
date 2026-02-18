@@ -174,24 +174,6 @@ body.index-layout #footer {
     align-items: center;
 }
 
-.footer-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 16px;
-}
-
-.footer-links a {
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-}
-
-.footer-links a:hover {
-    color: var(--accent);
-}
-
 .footer-subtitle {
     margin: 6px 0 0 0;
     color: rgba(255, 255, 255, 0.8);
