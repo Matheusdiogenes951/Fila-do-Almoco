@@ -165,3 +165,6 @@ Demonstracao (site)
 - Nao ha banco de dados. Tudo e apenas em memoria.
 - Ao recarregar a pagina, as alteracoes (alunos/faltas) se perdem.
 - Se quiser salvar dados, precisa integrar com backend ou `localStorage`.
+
+
+## Ainda será realizada atualizaçoes, o projeto está em evoluçao constante!!!
