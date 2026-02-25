@@ -7,9 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (iemail === 'adm@gmail.com' && isenha === '12345') {
             Swal.fire({
-                title: "Good job!",
-                text: "You clicked the button!",
+                title: "Bem-vindo, ADM!",
+                text: "Login realizado com sucesso!",
                 icon: "success"
+
+            }).then(() => {
+                window.location.href = 'dashboard.html';
             });
         } else {
             Swal.fire({
