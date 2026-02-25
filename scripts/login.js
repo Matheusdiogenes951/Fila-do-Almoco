@@ -6,10 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const isenha = document.getElementById('isenha').value;
 
         if (iemail === 'adm@gmail.com' && isenha === '12345') {
-            alert('Bem-vindo!!!');
-            location.href = 'dashboard.html';
+            Swal.fire({
+                title: "Good job!",
+                text: "You clicked the button!",
+                icon: "success"
+            });
         } else {
-            alert('Email ou senha incorretos!, tente novamente.');
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Email ou senha incorretos!",
+                footer: '<a href="#">Why do I have this issue?</a>'
+            });
         }
     }
 
@@ -20,3 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+
