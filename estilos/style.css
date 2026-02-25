@@ -168,7 +168,7 @@ body.index-layout #footer {
     max-width: 1000px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
     align-items: center;
