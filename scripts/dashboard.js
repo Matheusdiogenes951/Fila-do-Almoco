@@ -229,12 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAddFalta.addEventListener('click', () => {
         const turma = turmaConfigSelect.value;
         const nomeAluno = alunoConfigSelect.value;
-        const quantidade = Number(document.getElementById('quantidade').value) || 1;
         const aluno = turmasData[turma].find((item) => item.nome === nomeAluno);
         if (!aluno) {
             return;
         }
-        aluno.faltas += quantidade;
+        aluno.faltas += 1;
         atualizarFaltasAtual();
         renderTabelaAlunos(turma);
         renderFila();
@@ -243,12 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRemoveFalta.addEventListener('click', () => {
         const turma = turmaConfigSelect.value;
         const nomeAluno = alunoConfigSelect.value;
-        const quantidade = Number(document.getElementById('quantidade').value) || 1;
         const aluno = turmasData[turma].find((item) => item.nome === nomeAluno);
         if (!aluno) {
             return;
         }
-        aluno.faltas = Math.max(0, aluno.faltas - quantidade);
+        aluno.faltas = Math.max(0, aluno.faltas - 1);
         atualizarFaltasAtual();
         renderTabelaAlunos(turma);
         renderFila();
