@@ -1,7 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const TURMAS_STORAGE_KEY = 'turmasData';
     const sidebar = document.querySelector('.sidebar');
     const btnMenu = document.querySelector('.btn-menu');
     const sidebarClose = document.querySelector('.sidebar-close');
+    const userInfoName = document.querySelector('.user-info span');
+    const btnSair = document.querySelector('.btn-sair');
+    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+    const perfilUsuario = usuarioLogado.perfil || 'admin';
 
     function toggleSidebar() {
         sidebar.classList.toggle('active');
@@ -10,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnMenu) btnMenu.addEventListener('click', toggleSidebar);
     if (sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
 
-    const turmasData = {
+    const turmasDataPadrao = {
         "Redes 1": [
             { nome: "Ana Souza", faltas: 1 },
             { nome: "Bruno Alves", faltas: 0 },
@@ -73,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
+    const turmasData = JSON.parse(localStorage.getItem(TURMAS_STORAGE_KEY) || 'null') || turmasDataPadrao;
+
     const navLinks = document.querySelectorAll('.nav-link');
     const viewPanels = document.querySelectorAll('.view-panel');
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -88,6 +95,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRemoveFalta = document.getElementById('btn-remove-falta');
     const faltasAtual = document.getElementById('faltas-atual');
     const filaMenos = document.getElementById('fila-menos');
+
+    function aplicarPermissoes() {
+        if (userInfoName) {
+            userInfoName.textContent = usuarioLogado.nome || 'Administrador';
+        }
+
+        if (perfilUsuario !== 'aluno') {
+            return;
+        }
+
+        navLinks.forEach((link) => {
+            const view = link.dataset.view;
+            const permitido = view === 'home';
+            link.classList.toggle('active', permitido);
+            link.style.display = permitido ? '' : 'none';
+        });
+
+        viewPanels.forEach((panel) => {
+            panel.classList.toggle('active', panel.dataset.viewPanel === 'home');
+        });
+    }
+
+    function salvarTurmasData() {
+        localStorage.setItem(TURMAS_STORAGE_KEY, JSON.stringify(turmasData));
+    }
 
     function preencherSelectsTurma() {
         const turmas = Object.keys(turmasData);
@@ -172,6 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
             const view = link.dataset.view;
+            if (perfilUsuario === 'aluno' && view !== 'home') {
+                return;
+            }
             navLinks.forEach((item) => item.classList.remove('active'));
             link.classList.add('active');
             viewPanels.forEach((panel) => {
@@ -208,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         turmasData[turma].push({ nome, faltas: 0 });
+        salvarTurmasData();
         novoAlunoInput.value = '';
         preencherSelectAlunos(turma);
         renderTabelaAlunos(turma);
@@ -221,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const turma = turmaAlunosSelect.value;
         const index = Number(event.target.dataset.index);
         turmasData[turma].splice(index, 1);
+        salvarTurmasData();
         preencherSelectAlunos(turma);
         renderTabelaAlunos(turma);
         renderFila();
@@ -234,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         aluno.faltas += 1;
+        salvarTurmasData();
         atualizarFaltasAtual();
         renderTabelaAlunos(turma);
         renderFila();
@@ -247,11 +285,35 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         aluno.faltas = Math.max(0, aluno.faltas - 1);
+        salvarTurmasData();
         atualizarFaltasAtual();
         renderTabelaAlunos(turma);
         renderFila();
     });
 
+    if (btnSair) {
+        btnSair.addEventListener('click', () => {
+            localStorage.removeItem('usuarioLogado');
+        });
+    }
+
+    window.addEventListener('storage', (event) => {
+        if (event.key !== TURMAS_STORAGE_KEY || !event.newValue) {
+            return;
+        }
+
+        const dadosAtualizados = JSON.parse(event.newValue);
+        Object.keys(turmasData).forEach((turma) => delete turmasData[turma]);
+        Object.entries(dadosAtualizados).forEach(([turma, alunos]) => {
+            turmasData[turma] = alunos;
+        });
+
+        const turmaAtual = turmaAlunosSelect.value || Object.keys(turmasData)[0];
+        sincronizarTurmaSelecionada(turmaAtual);
+    });
+
     preencherSelectsTurma();
+    salvarTurmasData();
     sincronizarTurmaSelecionada(Object.keys(turmasData)[0]);
+    aplicarPermissoes();
 });
