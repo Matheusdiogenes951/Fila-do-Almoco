@@ -103,10 +103,13 @@ body.index-html {
     align-items: center;
     gap: 10px;
     box-shadow: 0 10px 20px rgba(11, 95, 18, 0.35);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
-.btn-entrar span {
-    font-weight: 700;
+
+.btn-entrar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 30px rgba(11, 95, 18, 0.34);
 }
 
 .index-main {
@@ -146,25 +149,6 @@ body.index-html {
     display: block;
     margin: 28px auto 34px;
     filter: drop-shadow(0 16px 30px rgba(16, 95, 35, 0.22));
-}
-
-.btn-acessar {
-    text-decoration: none;
-    background: var(--grad-brand);
-    color: white;
-    padding: 16px 56px;
-    font-size: 28px;
-    font-weight: 700;
-    border-radius: 14px;
-    box-shadow: 0 14px 24px rgba(11, 95, 18, 0.28);
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    display: inline-block;
-}
-
-.btn-acessar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 30px rgba(11, 95, 18, 0.34);
 }
 
 .index-footer {
