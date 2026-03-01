@@ -338,6 +338,8 @@ body.dashboard-html {
     background: rgba(255, 255, 255, 0.15);
     color: white;
     border: none;
+    padding: 0;
+    line-height: 1;
     width: 36px;
     height: 36px;
     border-radius: 10px;
@@ -345,6 +347,10 @@ body.dashboard-html {
     display: grid;
     place-items: center;
     transition: 0.2s ease;
+}
+
+.sidebar-close i {
+    line-height: 1;
 }
 
 .sidebar-close:hover {
