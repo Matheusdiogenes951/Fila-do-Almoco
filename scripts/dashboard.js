@@ -296,6 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarFaltasAtual();
         renderTabelaAlunos(turma);
         renderFila();
+        if (window.Swal) {
+            Swal.fire({
+                title: "Falta removida!",
+                text: `A falta de ${aluno.nome} foi retirada com sucesso.`,
+                icon: "success"
+            });
+        }
     });
 
     if (btnSair) {
