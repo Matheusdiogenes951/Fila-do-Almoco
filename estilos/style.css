@@ -207,13 +207,13 @@ body#login-html main {
     flex: 1;
     display: grid;
     place-items: center;
-    padding: 24px;
+    padding: 20px;
 }
 
 section#login {
     position: relative;
-    width: min(92vw, 520px);
-    padding: 28px 30px;
+    width: min(90vw, 520px);
+    padding: 30px 30px;
     background-color: var(--surface);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-2);
