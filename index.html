@@ -7,23 +7,33 @@
     <link rel="stylesheet" href="estilos/style.css">
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
 </head>
-<body class="index-layout index-html">
-    <header id="Central">
-        <h1>Fila do Almoço</h1>
-    </header>
-    <main id="buttom_i">
-        <a href="login.html" class="btn-acessar">Acessar Sistema</a>
-    </main>
+<body class="index-html">
+    <div class="index-page">
+        <header class="index-topbar">
+            <a href="index.html" class="index-brand">Fila do Almoço</a>
+            <nav class="index-nav">
+                <a href="#sobre">Sobre</a>
+                <a href="#contato">Contato</a>
+                <a href="login.html" class="btn-entrar">Entrar <span aria-hidden="true">></span></a>
+            </nav>
+        </header>
 
-    <footer id="footer">
-        <div class="footer-content">
-            <div>
+        <main class="index-main">
+            <section class="index-hero" id="sobre">
+                <h1>Fila do Almoço</h1>
+                <p>Gerencie filas e faltas de forma rápida e prática na EEEP Comendador Miguel Gurgel.</p>
+                <img src="imagens/index.png" alt="Ilustração do sistema de faltas" class="index-hero-image">
+                <a href="login.html" class="btn-acessar">Entrar</a>
+            </section>
+        </main>
+
+        <footer id="contato" class="index-footer">
+            <div class="index-footer-content">
                 <p><strong>EEEP Comendador Miguel Gurgel</strong></p>
                 <p class="footer-subtitle">Sistema de gerenciamento de faltas e vercionamento de filas com base em faltas!</p>
             </div>
-        </div>
-    </footer>
-    
+        </footer>
+    </div>
 </body>
 </html>
 

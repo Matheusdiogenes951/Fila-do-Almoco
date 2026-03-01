@@ -46,143 +46,149 @@ body {
 /* ================== INDEX ================== */
 
 body.index-html {
-    background: radial-gradient(circle at top left, rgba(20, 163, 37, 0.18), transparent 45%),
-                radial-gradient(circle at 80% 10%, rgba(15, 122, 26, 0.2), transparent 40%),
-                linear-gradient(135deg, #f0faf2, #ffffff);
+    background: radial-gradient(circle at 10% -5%, rgba(48, 186, 76, 0.25), transparent 40%),
+                radial-gradient(circle at 95% 15%, rgba(24, 143, 53, 0.2), transparent 36%),
+                linear-gradient(180deg, #f7faf6 0%, #ebf9ee 58%, #d9f0dc 100%);
     color: var(--ink);
+    min-height: 100vh;
+    text-align: left;
+}
+
+.index-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-#Central {
-    min-height: 60vh;
-    display: grid;
-    place-items: center;
-    padding: 40px 20px;
-    flex: 1;
+.index-topbar {
+    width: min(1100px, calc(100% - 32px));
+    margin: 22px auto 0;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 122, 26, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 12px 26px rgba(11, 95, 18, 0.12);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
-#Central h1 {
-    margin: 0;
+.index-brand {
     color: var(--brand-900);
-    font-size: clamp(34px, 5vw, 62px);
-    letter-spacing: 0.4px;
-    text-wrap: balance;
+    text-decoration: none;
+    font-size: clamp(24px, 2.8vw, 40px);
+    font-weight: 700;
 }
 
-.hero {
-    max-width: 720px;
-    text-align: center;
-    background: white;
-    padding: 50px 40px;
-    border-radius: 28px;
-    box-shadow: var(--shadow-2);
+.index-nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
 }
 
-.hero h1 {
-    font-size: clamp(36px, 6vw, 72px);
-    margin: 12px 0 10px 0;
-    color: var(--brand-900);
+.index-nav a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 600;
 }
 
-.hero p {
-    color: var(--muted);
-    font-size: 18px;
-    margin-bottom: 28px;
-}
-
-.hero-badge {
+.btn-entrar {
+    background: var(--grad-brand);
+    color: white !important;
+    border-radius: 12px;
+    padding: 10px 22px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(15, 122, 26, 0.12);
-    color: var(--brand-700);
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 13px;
+    gap: 10px;
+    box-shadow: 0 10px 20px rgba(11, 95, 18, 0.35);
+}
+
+.btn-entrar span {
     font-weight: 700;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
+}
+
+.index-main {
+    flex: 1;
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+    padding: 38px 0 46px;
+}
+
+.index-hero {
+    width: min(760px, 100%);
+    text-align: center;
+}
+
+.index-hero h1 {
+    margin: 0;
+    color: var(--brand-900);
+    font-size: clamp(44px, 8vw, 72px);
+    font-weight: 700;
+    line-height: 1.05;
+    text-shadow: 0 3px 0 rgba(7, 64, 12, 0.16);
+}
+
+.index-hero p {
+    margin: 16px auto 0;
+    max-width: 680px;
+    color: #1d3420;
+    font-size: clamp(20px, 3vw, 34px);
+    line-height: 1.3;
+}
+
+.index-hero-image {
+    width: min(480px, 100%);
+    height: auto;
+    display: block;
+    margin: 28px auto 34px;
+    filter: drop-shadow(0 16px 30px rgba(16, 95, 35, 0.22));
 }
 
 .btn-acessar {
     text-decoration: none;
     background: var(--grad-brand);
     color: white;
-    padding: 18px 40px;
-    font-size: 18px;
+    padding: 16px 56px;
+    font-size: 28px;
     font-weight: 700;
-    border-radius: 12px;
-    box-shadow: var(--shadow-1);
-    transition: 0.28s ease;
+    border-radius: 14px;
+    box-shadow: 0 14px 24px rgba(11, 95, 18, 0.28);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
     border: 1px solid rgba(255, 255, 255, 0.28);
+    display: inline-block;
 }
 
 .btn-acessar:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 30px rgba(11, 95, 18, 0.34);
 }
 
-/* Layout dedicado da home: botao central e footer no fim */
-body.index-layout {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-body.index-layout #Central {
-    min-height: auto;
-    display: block;
-    padding: 32px 20px 0;
-    max-width: 1100px;
-    width: 100%;
-    margin: 0 auto;
-}
-
-body.index-layout #buttom_i {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 20px 46px;
-}
-
-body.index-layout #footer {
-    margin-top: 0;
-}
-
-/* ================== FOOTER ================== */
-
-#footer {
+.index-footer {
     font-size: 14px;
-    background: var(--grad-brand);
+    background: linear-gradient(180deg, #1d6e29 0%, #105e1f 100%);
     color: white;
-    padding: 28px 20px;
+    padding: 34px 20px;
     width: 100%;
-    margin-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
 
-.footer-content {
-    max-width: 1000px;
+.index-footer-content {
+    max-width: 900px;
     margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    align-items: center;
+    text-align: center;
+}
+
+.index-footer-content p {
+    margin: 0;
 }
 
 .footer-subtitle {
-    margin: 6px 0 0 0;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.footer-copy {
-    text-align: center;
-    margin-top: 20px;
-    color: rgba(255, 255, 255, 0.8);
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, 0.86);
 }
 
 /* ================== LOGIN ================== */
@@ -821,8 +827,10 @@ body.dashboard-html {
         font-size: 18px;
     }
 
-    .hero {
-        padding: 36px 26px;
+    .index-topbar {
+        width: calc(100% - 24px);
+        margin-top: 12px;
+        padding: 12px 14px;
     }
 
     .topbar {
@@ -858,22 +866,27 @@ body.dashboard-html {
         font-size: 16px;
     }
 
-    .hero {
-        padding: 28px 20px;
+    .index-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
 
-    .hero p {
-        font-size: 16px;
+    .index-nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
     }
 
     .btn-acessar {
         width: 100%;
         display: inline-block;
+        font-size: 24px;
+        padding: 14px 18px;
     }
 
-    .footer-content {
-        flex-direction: column;
-        align-items: flex-start;
+    .index-hero p {
+        font-size: 19px;
     }
 
     .sidebar {
