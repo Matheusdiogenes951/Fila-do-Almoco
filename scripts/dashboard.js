@@ -3,6 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnMenu = document.querySelector('.btn-menu');
     const sidebarClose = document.querySelector('.sidebar-close');
 
+    // Esconder o botão de menu para perfis que não são admin
+    try {
+        const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado')) || null;
+        if (usuarioLogado && usuarioLogado.perfil && usuarioLogado.perfil !== 'admin') {
+            if (btnMenu) btnMenu.style.display = 'none';
+            // Também impedir a abertura da sidebar caso exista um estado ativo
+            if (sidebar) sidebar.classList.remove('active');
+        }
+    } catch (e) {
+        // se algo falhar, não bloquear o restante do script
+        console.warn('Erro ao ler usuarioLogado:', e);
+    }
+
     function toggleSidebar() {
         sidebar.classList.toggle('active');
     }
