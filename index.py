@@ -1,10 +1,8 @@
-from flask import Flask, jsonify
-import sqlite3
+from flask import Flask, jsonify, request # Só adicionei o request aqui para poder ler o JSON
 
 app = Flask(__name__)
-DB_NAME = "escola.db"
 
-# --- DADOS INTEGRADOS (Todas as 10 turmas) ---
+# --- DADOS INTEGRADOS ---
 dados_escola = {
     "DS1": ["ANTÔNIO EMANUEL SOARES SILVA", "AIRTON DANIEL DE JEOVA LIMA BANDEIRA", "ANA BEATRIZ BENTES MENEZES", "AMANDA MARIA IZIDÉRIO MATIAS", "ÁGATHA NICOLLY MENDES COSTA", "ANA CLARA SILVA DE SOUSA", "AMANDA SOBREIRA PINHEIRO MARQUES", "BENICIO ALVES DE ALMEIDA", "BRAYAN RIBEIRO BEZERRA MELO", "BEATRIZ CRISTINA ALVES DE SOUZA", "CARLOS EDUARDO LIMA SILVA", "CARLOS EDUARDO BARROSO OLIVEIRA", "DAVID KAIK DE OLIVEIRA RODRIGUES", "DENYS FABRICIO DA SILVA OLIVEIRA", "FRANCIELE REIS NASCIMENTO GOMES", "GUSTAVO OLIVEIRA ROCHA", "GABRIEL OLIVEIRA SALES", "IAN DOMINGOS VALDEVINO SOUSA DA SILVA", "JOÃO FILHO DOS SANTOS URBANO", "JOÃO GABRIEL RIBEIRO MOURÃO HOLANDA", "JOAQUIM GOMES CHAVES FILHO", "JOÃO PEDRO BENÍCIO LIOBA", "JOSÉ LUCAS TORQUATO DE LOIOLA", "JOSUÉ MENDES ALVES", "KALLEB DA SILVA MAIA", "LUCAS EMANUEL OLIVEIRA VIANA", "LUIS GUILHERME CHAGAS DE FREITAS CARVALHO", "MARIA JÚLIA PENHA FROTA", "MARCO ANTÔNIO LEAL NETO", "MARIA CLARA SOUSA SILVA FREITAS", "MARIA VITÓRIA DE SOUSA MAURÍCIO", "MATEUS COSTA SILVA", "PEDRO ANGELO MATEUS SOUSA", "PAULO VICTOR OLIVEIRA MENEZES DE ARAÚJO", "PEDRO ÍCARO DE MOURA ANDRADE", "SAMUEL DAVI RIBEIRO RODRIGUES", "SAMUEL SALDANHA NUNES", "SARAH KETLEY SANTOS ALVES", "WANDERSON DOS SANTOS RAMOS", "YURI RYAN GURGEL SOUSA"],
     "MULTI1": ["ALAWARA FERREIRA ALBUQUERQUE", "ALISSON RODRIGUES ARAÚJO", "ANA SOPHIA FERREIRA OLIVEIRA", "ANA GISELLY SÁ DANTAS", "ANDRÉ LUIS SANTOS DE ANDRADE", "ALYCE LIRA BRAGA", "ALANA SOPHIA SILVA COSTA", "ANA LIA LIMA DA SILVA", "ANA JÚLIA DE SOUSA MENDES", "CAMILA DAMASCENO DE FRANÇA", "DÉBORA FERREIRA DO NASCIMENTO CASTRO", "DEYVIANE ALEXANDRE DOS SANTOS SALES", "EWERTON DA SILVA CORDEIRO", "ESTER CHAVES DOS SANTOS ARAÚJO", "ISABELA FERREIRA BRAGA", "IASMIN MOTA RODRIGUES", "JÚLIA PRAXEDES CHAVES", "JOSUÉ LUCAS ALMEIDA DA SILVA", "LETÍCIA MARIA MACEDO DE SOUZA", "LAYSA SOUSA DE JESUS", "LOHANA DÉBORA DE OLIVEIRA SOUZA NOBRE", "LUANNA LINA OLIVEIRA BUCAR", "LUIZ OTÁVIO DE ALENCAR QUEIROZ", "MARIA GABRIELLA ROCHA DE SOUSA", "MARIA EDUARDA DE FRANÇA DA SILVA", "MARIA IVANA VIEIRA", "MARIA FERNANDA DOS SANTOS ANDRADE", "MARIA MYRELLA RODRIGUES SOUSA", "MARIANA DA SILVA CARVALHO", "MARIA JULIANA NASCIMENTO DA COSTA", "MARIA EMILLY CAVALCANTE SIPRIANO", "MARIA CLARA FERREIRA DE FREITAS", "MARIA CECILIA VICTOR DOS SANTOS", "MIGUEL CAMPOS DE SOUZA", "NARA NATIELY DO NASCIMENTO DE MELO", "PAMELA SOPHIA ALVES DE OLIVEIRA", "PAMELA SOARES MONTE", "PIETRA FURTADO MELO", "SARA REBECA MONTEIRO BARBOSA", "WILLYANE EDUARDO GOMES", "YARA INGRID TEIXEIRA SANTANA"],
@@ -18,62 +16,55 @@ dados_escola = {
     "CTB3": ["ADRIANE NOGUEIRA ALVES", "ALAN VINICIUS DA SILVA MONTEIRO", "ANA LARA LIMA DE SOUZA", "ANA PAULA RODRIGUES FAUSTINO", "ANTONIA GRAZIELLY FERREIRA DA SILVA", "ANTONIA HORTENCIA ASSUNÇÃO DE SILVA", "EMILLY VITORIA ROFINO DE LIMA", "FRANCISCO RIKELVI DA SILVA DE OLIVEIRA VIEIRA", "GABRIELA ARAUJO MAGNO", "HAVYLA FERREIRA DE OLIVEIRA", "ISIS RODRIGUES HENRIQUE", "JOÃO ARTUR BENEDITO NOGUEIRA", "JOÃO GUILHERME VIEIRA TORQUATO", "JOÃO VICTOR NUNES DANTAS", "JOÃO VITOR DE JESUS DOS ANJOS", "JOSÉ VINÍCIUS SOUSA FREITAS", "LUIS GUSTAVO FALCÃO FERNANDES", "LUIS KENNEDY FLORENÇA DE LIMA", "MARIA CECILIA MEDEIROS RODRIGUES", "MARIA CLARA DE OLIVEIRA MOURA", "MARIA CLARA RODRIGUES DA SILVA", "MARIA CLARA SILVA SEVERO", "MARIA DE FATIMA RODRIGUES DA SILVA", "MARIA ESTER BRASILEIRO DOS SANTOS", "MARIA ISABELY LEITE AMARANTE", "MARIA SAMIA COSTA DE OLIVEIRA", "MARIANA MAGALHÃES DUARTE DOS SANTOS", "MATHEUS WAGNER DE SOUZA BARBOSA", "NICKOLAS CRIOLLO VINASCO", "NICOLLE GUIMARÃES", "NYCAEL AGUIAR CIRINO", "PEDRO WILKEN ANDRADE DE BRITO", "RYAN CONCEIÇÃO GOMES", "SARA VITÓRIA UCHOA RIBEIRO", "VICTOR HUGO GOMES SANTOS", "VINICIUS FERRER RODRIGUES", "YASMIN FERNANDES PEREIRA"]
 }
 
-# --- FUNÇÕES DO BANCO ---
-def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    # Cria as tabelas
-    cursor.execute('CREATE TABLE IF NOT EXISTS salas (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT UNIQUE)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS alunos (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, sala_id INTEGER, FOREIGN KEY(sala_id) REFERENCES salas(id))')
-    
-    # Verifica se já tem dados para não duplicar
-    cursor.execute('SELECT COUNT(*) FROM salas')
-    if cursor.fetchone()[0] == 0:
-        for sala, alunos in dados_escola.items():
-            cursor.execute('INSERT INTO salas (nome) VALUES (?)', (sala,))
-            sala_id = cursor.lastrowid
-            for aluno in alunos:
-                cursor.execute('INSERT INTO alunos (nome, sala_id) VALUES (?, ?)', (aluno, sala_id))
-    conn.commit()
-    conn.close()
 
-# --- ROTAS DA API ---
+# ROTAS DA API 
+
+# 1. Listar tudo
 @app.route('/alunos', methods=['GET'])
 def listar_tudo():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    # Pega todos os alunos e o nome da sala deles
-    cursor.execute('''
-        SELECT s.nome, a.nome 
-        FROM alunos a 
-        JOIN salas s ON a.sala_id = s.id
-    ''')
-    dados = cursor.fetchall()
-    conn.close()
-    
-    # Organiza o resultado
-    resultado = {}
-    for sala, aluno in dados:
-        if sala not in resultado: resultado[sala] = []
-        resultado[sala].append(aluno)
-    return jsonify(resultado)
+    return jsonify(dados_escola)
 
+# 2. Buscar por sala
+# Rota Original 2
 @app.route('/alunos/<sala_nome>', methods=['GET'])
 def buscar_sala(sala_nome):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT a.nome FROM alunos a 
-        JOIN salas s ON a.sala_id = s.id 
-        WHERE s.nome = ?
-    ''', (sala_nome.upper(),))
-    alunos = [row[0] for row in cursor.fetchall()]
-    conn.close()
+    # 1. Transformamos o nome da sala em maiúsculas (ex: ds3 -> DS3)
+    sala = sala_nome.upper()
     
-    if alunos:
-        return jsonify({sala_nome.upper(): alunos})
+    # 2. Verificamos se essa sala existe no nosso dicionário 'dados_escola'
+    if sala in dados_escola:
+        # 3. Se existir, retornamos a lista de alunos daquela sala
+        return jsonify({sala: dados_escola[sala]})
+    
+    # 4. Se não existir, retornamos erro 404
+    return jsonify({"erro": "Sala não encontrada"}), 404
+# 3. Criar Aluno (POST)
+@app.route('/alunos/novo', methods=['POST'])
+def criar_aluno():
+    dados = request.get_json()
+    nome = dados.get('nome')
+    sala = dados.get('sala', '').upper()
+
+    if sala in dados_escola:
+        dados_escola[sala].append(nome)
+        return jsonify({"status": "sucesso", "mensagem": f"{nome} adicionado a {sala}"}), 201
     return jsonify({"erro": "Sala não encontrada"}), 404
 
+# 4. Deletar Aluno (DELETE)
+@app.route('/alunos/remover/<nome>', methods=['DELETE'])
+def deletar_aluno(nome):
+    nome_procurado = nome.upper()
+    for sala in dados_escola:
+        lista_nomes_up = [n.upper() for n in dados_escola[sala]]
+        
+        if nome_procurado in lista_nomes_up:
+            index = lista_nomes_up.index(nome_procurado)
+            nome_removido = dados_escola[sala].pop(index)
+            return jsonify({"status": "removido", "aluno": nome_removido}), 200
+            
+    return jsonify({"erro": "Aluno não encontrado"}), 404
+
 if __name__ == '__main__':
-    init_db() # Cria o banco e insere os dados ao iniciar
     app.run(debug=True)
+
+
