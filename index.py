@@ -28,15 +28,11 @@ def listar_tudo():
 # Rota Original 2
 @app.route('/alunos/<sala_nome>', methods=['GET'])
 def buscar_sala(sala_nome):
-    # 1. Transformamos o nome da sala em maiúsculas (ex: ds3 -> DS3)
     sala = sala_nome.upper()
     
-    # 2. Verificamos se essa sala existe no nosso dicionário 'dados_escola'
     if sala in dados_escola:
-        # 3. Se existir, retornamos a lista de alunos daquela sala
         return jsonify({sala: dados_escola[sala]})
     
-    # 4. Se não existir, retornamos erro 404
     return jsonify({"erro": "Sala não encontrada"}), 404
 # 3. Criar Aluno (POST)
 @app.route('/alunos/novo', methods=['POST'])
