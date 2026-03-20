@@ -1,95 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.querySelector('.sidebar');
-    const btnMenu = document.querySelector('.btn-menu');
-    const sidebarClose = document.querySelector('.sidebar-close');
-
-    // Esconder o botão de menu para perfis que não são admin
-    try {
-        const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado')) || null;
-        if (usuarioLogado && usuarioLogado.perfil && usuarioLogado.perfil !== 'admin') {
-            if (btnMenu) btnMenu.style.display = 'none';
-            // Também impedir a abertura da sidebar caso exista um estado ativo
-            if (sidebar) sidebar.classList.remove('active');
-        }
-    } catch (e) {
-        // se algo falhar, não bloquear o restante do script
-        console.warn('Erro ao ler usuarioLogado:', e);
-    }
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('active');
-    }
-
-    if (btnMenu) btnMenu.addEventListener('click', toggleSidebar);
-    if (sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
-
-    const turmasData = {
-        "Redes 1": [
-            { nome: "Ana Souza", faltas: 1 },
-            { nome: "Bruno Alves", faltas: 0 },
-            { nome: "Carlos Lima", faltas: 2 },
-            { nome: "Daniela Rocha", faltas: 3 }
-        ],
-        "Des. Sistemas 1": [
-            { nome: "Eduardo Santos", faltas: 1 },
-            { nome: "Fernanda Castro", faltas: 0 },
-            { nome: "Guilherme Pires", faltas: 2 },
-            { nome: "Helena Silva", faltas: 1 }
-        ],
-        "Des. Sistemas 2": [
-            { nome: "Igor Nunes", faltas: 3 },
-            { nome: "Júlia Mendes", faltas: 1 },
-            { nome: "Kaio Ramos", faltas: 2 },
-            { nome: "Larissa Prado", faltas: 0 }
-        ],
-        "Des. Sistemas 3": [
-            { nome: "Mateus Ferreira", faltas: 1 },
-            { nome: "Natália Ribeiro", faltas: 2 },
-            { nome: "Otávio Costa", faltas: 3 },
-            { nome: "Patrícia Moura", faltas: 0 }
-        ],
-        "Multimídia 1": [
-            { nome: "Rafaela Duarte", faltas: 1 },
-            { nome: "Samuel Cardoso", faltas: 2 },
-            { nome: "Tainá Barbosa", faltas: 0 },
-            { nome: "Victor Rocha", faltas: 1 }
-        ],
-        "Multimídia 2": [
-            { nome: "Wesley Moraes", faltas: 2 },
-            { nome: "Yasmin Araújo", faltas: 1 },
-            { nome: "Zeca Martins", faltas: 3 },
-            { nome: "Ângela Farias", faltas: 0 }
-        ],
-        "Multimídia 3": [
-            { nome: "Bianca Freitas", faltas: 1 },
-            { nome: "Caio Teixeira", faltas: 2 },
-            { nome: "Diego Braga", faltas: 0 },
-            { nome: "Elisa Santana", faltas: 3 }
-        ],
-        "Contabilidade 1": [
-            { nome: "Felipe Moreira", faltas: 2 },
-            { nome: "Giovana Nogueira", faltas: 1 },
-            { nome: "Henrique Lopes", faltas: 0 },
-            { nome: "Isabela Dias", faltas: 3 }
-        ],
-        "Contabilidade 2": [
-            { nome: "João Pedro", faltas: 1 },
-            { nome: "Kelly Batista", faltas: 2 },
-            { nome: "Lucas Cunha", faltas: 3 },
-            { nome: "Marina Azevedo", faltas: 0 }
-        ],
-        "Contabilidade 3": [
-            { nome: "Nicolas Gomes", faltas: 2 },
-            { nome: "Olívia Moraes", faltas: 1 },
-            { nome: "Pedro Henrique", faltas: 0 },
-            { nome: "Quezia Lima", faltas: 3 }
-        ]
-    };
-
+    const SESSION_KEY = 'usuarioLogado';
+    const isFileProtocol = window.location.protocol === 'file:';
     const navLinks = document.querySelectorAll('.nav-link');
     const viewPanels = document.querySelectorAll('.view-panel');
     const tabButtons = document.querySelectorAll('.tab-btn');
     const periodPanels = document.querySelectorAll('.period-panel');
+    const sidebar = document.querySelector('.sidebar');
+    const btnMenu = document.querySelector('.btn-menu');
+    const sidebarClose = document.querySelector('.sidebar-close');
+    const userName = document.getElementById('user-name');
+    const btnSair = document.getElementById('btn-sair');
 
     const turmaAlunosSelect = document.getElementById('turma-alunos');
     const turmaConfigSelect = document.getElementById('turma-config');
@@ -101,170 +21,350 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRemoveFalta = document.getElementById('btn-remove-falta');
     const faltasAtual = document.getElementById('faltas-atual');
     const filaMenos = document.getElementById('fila-menos');
+    const relatorioTotais = document.getElementById('relatorio-totais');
+    const relatorioMedias = document.getElementById('relatorio-medias');
+    const relatorioRanking = document.getElementById('relatorio-ranking');
+
+    if (isFileProtocol) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Servidor obrigatorio',
+            text: 'Para carregar turmas, alunos e fila, rode "python index.py" e abra http://127.0.0.1:5000/index.html.'
+        });
+        return;
+    }
+
+    const usuario = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+    if (!usuario) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const state = {
+        turmas: [],
+        turmaSelecionada: null
+    };
+
+    function obterTurmaPorCodigo(codigo) {
+        return state.turmas.find((turma) => turma.codigo === codigo) || null;
+    }
+
+    async function request(url, options = {}) {
+        const resposta = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            },
+            ...options
+        });
+
+        const conteudo = await resposta.text();
+        const dados = conteudo ? JSON.parse(conteudo) : {};
+
+        if (!resposta.ok) {
+            throw new Error(dados.erro || 'Falha ao comunicar com a API.');
+        }
+
+        return dados;
+    }
+
+    async function carregarTurmas() {
+        const dados = await request('/api/turmas');
+        state.turmas = dados.turmas || [];
+        if (!state.turmaSelecionada || !obterTurmaPorCodigo(state.turmaSelecionada)) {
+            state.turmaSelecionada = state.turmas[0]?.codigo || null;
+        }
+    }
 
     function preencherSelectsTurma() {
-        const turmas = Object.keys(turmasData);
-        turmas.forEach((turma) => {
+        turmaAlunosSelect.innerHTML = '';
+        turmaConfigSelect.innerHTML = '';
+
+        state.turmas.forEach((turma) => {
             const optionAlunos = document.createElement('option');
-            optionAlunos.value = turma;
-            optionAlunos.textContent = turma;
+            optionAlunos.value = turma.codigo;
+            optionAlunos.textContent = turma.nome;
             turmaAlunosSelect.appendChild(optionAlunos);
 
             const optionConfig = document.createElement('option');
-            optionConfig.value = turma;
-            optionConfig.textContent = turma;
+            optionConfig.value = turma.codigo;
+            optionConfig.textContent = turma.nome;
             turmaConfigSelect.appendChild(optionConfig);
         });
     }
 
-    function preencherSelectAlunos(turma) {
+    function preencherSelectAlunos(codigoTurma) {
+        const turma = obterTurmaPorCodigo(codigoTurma);
         alunoConfigSelect.innerHTML = '';
-        (turmasData[turma] || []).forEach((aluno) => {
+
+        if (!turma) {
+            faltasAtual.textContent = '';
+            return;
+        }
+
+        turma.alunos.forEach((aluno) => {
             const option = document.createElement('option');
-            option.value = aluno.nome;
+            option.value = aluno.id;
             option.textContent = aluno.nome;
             alunoConfigSelect.appendChild(option);
         });
+
         atualizarFaltasAtual();
     }
 
-    function renderTabelaAlunos(turma) {
+    function renderTabelaAlunos(codigoTurma) {
+        const turma = obterTurmaPorCodigo(codigoTurma);
         tabelaAlunosBody.innerHTML = '';
-        const alunos = turmasData[turma] || [];
-        alunos.forEach((aluno, index) => {
+
+        if (!turma) {
+            return;
+        }
+
+        turma.alunos.forEach((aluno) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${aluno.nome}</td>
                 <td><span class="badge">${aluno.faltas}</span></td>
-                <td><button class="btn-remove btn-inline" data-index="${index}">Remover</button></td>
+                <td><button class="btn-remove btn-inline" data-id="${aluno.id}">Remover</button></td>
             `;
             tabelaAlunosBody.appendChild(row);
         });
     }
 
-    function calcularTotalFaltas(turma) {
-        return (turmasData[turma] || []).reduce((total, aluno) => total + aluno.faltas, 0);
-    }
-
     function renderFila() {
-        const turmas = Object.keys(turmasData).map((turma) => ({
-            turma,
-            faltas: calcularTotalFaltas(turma)
-        }));
-        const menos = turmas.slice().sort((a, b) => a.faltas - b.faltas || a.turma.localeCompare(b.turma));
+        const fila = state.turmas
+            .map((turma) => ({
+                nome: turma.nome,
+                total_faltas: turma.total_faltas
+            }))
+            .sort((a, b) => a.total_faltas - b.total_faltas || a.nome.localeCompare(b.nome));
 
         filaMenos.innerHTML = '';
 
-        menos.forEach((item) => {
+        fila.forEach((item) => {
             const row = document.createElement('li');
-            row.innerHTML = `<span>${item.turma}</span><span class="badge">${item.faltas}</span>`;
+            row.innerHTML = `<span>${item.nome}</span><span class="badge">${item.total_faltas}</span>`;
             filaMenos.appendChild(row);
         });
     }
 
-    function atualizarFaltasAtual() {
-        const turma = turmaConfigSelect.value;
-        const nomeAluno = alunoConfigSelect.value;
-        const aluno = (turmasData[turma] || []).find((item) => item.nome === nomeAluno);
-        if (!aluno) {
-            faltasAtual.textContent = '';
+    function renderRelatorios() {
+        const turmasOrdenadas = [...state.turmas].sort((a, b) => a.nome.localeCompare(b.nome));
+        relatorioTotais.innerHTML = '';
+        relatorioMedias.innerHTML = '';
+        relatorioRanking.innerHTML = '';
+
+        turmasOrdenadas.forEach((turma) => {
+            const totalCard = document.createElement('div');
+            totalCard.className = 'turma-card';
+            totalCard.innerHTML = `<strong>${turma.nome}</strong><span>${turma.total_faltas} faltas acumuladas</span>`;
+            relatorioTotais.appendChild(totalCard);
+
+            const media = turma.total_alunos ? (turma.total_faltas / turma.total_alunos).toFixed(2) : '0.00';
+            const mediaCard = document.createElement('div');
+            mediaCard.className = 'turma-card';
+            mediaCard.innerHTML = `<strong>${turma.nome}</strong><span>${media} faltas por aluno</span>`;
+            relatorioMedias.appendChild(mediaCard);
+        });
+
+        const ranking = state.turmas
+            .flatMap((turma) => turma.alunos.map((aluno) => ({
+                turma: turma.nome,
+                nome: aluno.nome,
+                faltas: aluno.faltas
+            })))
+            .sort((a, b) => b.faltas - a.faltas || a.nome.localeCompare(b.nome))
+            .slice(0, 10);
+
+        if (!ranking.length) {
+            const card = document.createElement('div');
+            card.className = 'turma-card';
+            card.innerHTML = '<strong>Sem dados</strong><span>Nenhum aluno cadastrado.</span>';
+            relatorioRanking.appendChild(card);
             return;
         }
+
+        ranking.forEach((item) => {
+            const rankingCard = document.createElement('div');
+            rankingCard.className = 'turma-card';
+            rankingCard.innerHTML = `<strong>${item.nome}</strong><span>${item.turma} - ${item.faltas} faltas</span>`;
+            relatorioRanking.appendChild(rankingCard);
+        });
+    }
+
+    function atualizarFaltasAtual() {
+        const turma = obterTurmaPorCodigo(turmaConfigSelect.value);
+        const alunoId = alunoConfigSelect.value;
+        const aluno = turma?.alunos.find((item) => item.id === alunoId);
+
+        if (!aluno) {
+            faltasAtual.textContent = turma ? 'Selecione um aluno.' : '';
+            return;
+        }
+
         faltasAtual.textContent = `Faltas atuais de ${aluno.nome}: ${aluno.faltas}`;
     }
 
-    function sincronizarTurmaSelecionada(turma) {
-        turmaAlunosSelect.value = turma;
-        turmaConfigSelect.value = turma;
-        preencherSelectAlunos(turma);
-        renderTabelaAlunos(turma);
+    function sincronizarTurmaSelecionada(codigoTurma) {
+        state.turmaSelecionada = codigoTurma;
+        turmaAlunosSelect.value = codigoTurma;
+        turmaConfigSelect.value = codigoTurma;
+        preencherSelectAlunos(codigoTurma);
+        renderTabelaAlunos(codigoTurma);
         renderFila();
+        renderRelatorios();
     }
 
-    navLinks.forEach((link) => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const view = link.dataset.view;
-            navLinks.forEach((item) => item.classList.remove('active'));
-            link.classList.add('active');
-            viewPanels.forEach((panel) => {
-                panel.classList.toggle('active', panel.dataset.viewPanel === view);
+    function aplicarPermissoes() {
+        userName.textContent = usuario.nome;
+
+        if (usuario.perfil !== 'admin') {
+            if (btnMenu) {
+                btnMenu.style.display = 'none';
+            }
+
+            sidebar.classList.remove('active');
+
+            navLinks.forEach((link) => {
+                if (link.dataset.view !== 'home') {
+                    link.style.display = 'none';
+                }
+            });
+        }
+    }
+
+    function inicializarNavegacao() {
+        navLinks.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const view = link.dataset.view;
+
+                navLinks.forEach((item) => item.classList.remove('active'));
+                link.classList.add('active');
+
+                viewPanels.forEach((panel) => {
+                    panel.classList.toggle('active', panel.dataset.viewPanel === view);
+                });
             });
         });
-    });
 
-    tabButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const period = button.dataset.period;
-            tabButtons.forEach((item) => item.classList.remove('active'));
-            button.classList.add('active');
-            periodPanels.forEach((panel) => {
-                panel.classList.toggle('active', panel.dataset.periodPanel === period);
+        tabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const period = button.dataset.period;
+                tabButtons.forEach((item) => item.classList.remove('active'));
+                button.classList.add('active');
+                periodPanels.forEach((panel) => {
+                    panel.classList.toggle('active', panel.dataset.periodPanel === period);
+                });
             });
         });
-    });
 
-    turmaAlunosSelect.addEventListener('change', () => {
-        sincronizarTurmaSelecionada(turmaAlunosSelect.value);
-    });
+        if (btnMenu) {
+            btnMenu.addEventListener('click', () => sidebar.classList.toggle('active'));
+        }
 
-    turmaConfigSelect.addEventListener('change', () => {
-        sincronizarTurmaSelecionada(turmaConfigSelect.value);
-    });
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', () => sidebar.classList.remove('active'));
+        }
 
-    alunoConfigSelect.addEventListener('change', atualizarFaltasAtual);
+        btnSair.addEventListener('click', () => {
+            localStorage.removeItem(SESSION_KEY);
+        });
+    }
 
-    btnAddAluno.addEventListener('click', () => {
-        const turma = turmaAlunosSelect.value;
+    async function adicionarAluno() {
+        const codigoTurma = turmaAlunosSelect.value;
         const nome = novoAlunoInput.value.trim();
         if (!nome) {
             return;
         }
-        turmasData[turma].push({ nome, faltas: 0 });
+
+        await request(`/api/turmas/${codigoTurma}/alunos`, {
+            method: 'POST',
+            body: JSON.stringify({ nome })
+        });
+
         novoAlunoInput.value = '';
-        preencherSelectAlunos(turma);
-        renderTabelaAlunos(turma);
-        renderFila();
-    });
+        await carregarTurmas();
+        sincronizarTurmaSelecionada(codigoTurma);
+    }
 
-    tabelaAlunosBody.addEventListener('click', (event) => {
-        if (!event.target.classList.contains('btn-inline')) {
+    async function removerAluno(alunoId) {
+        const codigoTurma = turmaAlunosSelect.value;
+        await request(`/api/turmas/${codigoTurma}/alunos/${alunoId}`, {
+            method: 'DELETE'
+        });
+        await carregarTurmas();
+        sincronizarTurmaSelecionada(codigoTurma);
+    }
+
+    async function atualizarFalta(operacao) {
+        const codigoTurma = turmaConfigSelect.value;
+        const alunoId = alunoConfigSelect.value;
+        if (!alunoId) {
             return;
         }
-        const turma = turmaAlunosSelect.value;
-        const index = Number(event.target.dataset.index);
-        turmasData[turma].splice(index, 1);
-        preencherSelectAlunos(turma);
-        renderTabelaAlunos(turma);
-        renderFila();
-    });
 
-    btnAddFalta.addEventListener('click', () => {
-        const turma = turmaConfigSelect.value;
-        const nomeAluno = alunoConfigSelect.value;
-        const aluno = turmasData[turma].find((item) => item.nome === nomeAluno);
-        if (!aluno) {
-            return;
+        await request(`/api/turmas/${codigoTurma}/alunos/${alunoId}/faltas`, {
+            method: 'PATCH',
+            body: JSON.stringify({ operacao })
+        });
+
+        await carregarTurmas();
+        sincronizarTurmaSelecionada(codigoTurma);
+    }
+
+    function registrarEventos() {
+        turmaAlunosSelect.addEventListener('change', () => {
+            sincronizarTurmaSelecionada(turmaAlunosSelect.value);
+        });
+
+        turmaConfigSelect.addEventListener('change', () => {
+            sincronizarTurmaSelecionada(turmaConfigSelect.value);
+        });
+
+        alunoConfigSelect.addEventListener('change', atualizarFaltasAtual);
+        btnAddAluno.addEventListener('click', () => tratarAcao(adicionarAluno));
+        btnAddFalta.addEventListener('click', () => tratarAcao(() => atualizarFalta('adicionar')));
+        btnRemoveFalta.addEventListener('click', () => tratarAcao(() => atualizarFalta('remover')));
+
+        tabelaAlunosBody.addEventListener('click', (event) => {
+            if (!event.target.classList.contains('btn-inline')) {
+                return;
+            }
+
+            tratarAcao(() => removerAluno(event.target.dataset.id));
+        });
+    }
+
+    async function tratarAcao(acao) {
+        try {
+            await acao();
+        } catch (erro) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: erro.message
+            });
         }
-        aluno.faltas += 1;
-        atualizarFaltasAtual();
-        renderTabelaAlunos(turma);
-        renderFila();
-    });
+    }
 
-    btnRemoveFalta.addEventListener('click', () => {
-        const turma = turmaConfigSelect.value;
-        const nomeAluno = alunoConfigSelect.value;
-        const aluno = turmasData[turma].find((item) => item.nome === nomeAluno);
-        if (!aluno) {
-            return;
+    async function init() {
+        try {
+            aplicarPermissoes();
+            inicializarNavegacao();
+            await carregarTurmas();
+            preencherSelectsTurma();
+            sincronizarTurmaSelecionada(state.turmaSelecionada);
+            registrarEventos();
+        } catch (erro) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Falha ao carregar o painel',
+                text: erro.message
+            });
         }
-        aluno.faltas = Math.max(0, aluno.faltas - 1);
-        atualizarFaltasAtual();
-        renderTabelaAlunos(turma);
-        renderFila();
-    });
+    }
 
-    preencherSelectsTurma();
-    sincronizarTurmaSelecionada(Object.keys(turmasData)[0]);
+    init();
 });

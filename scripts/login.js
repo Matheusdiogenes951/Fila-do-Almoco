@@ -1,54 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
+    const SESSION_KEY = 'usuarioLogado';
+    const isFileProtocol = window.location.protocol === 'file:';
 
-    function entrar() {
-        const iemail = document.getElementById('iemail').value;
-        const isenha = document.getElementById('isenha').value;
+    if (isFileProtocol) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Execute com o servidor',
+            text: 'Abra o projeto por http://127.0.0.1:5000 rodando o arquivo index.py.'
+        });
+    }
 
-        if (iemail === 'adm@gmail.com' && isenha === '12345') {
-            localStorage.setItem('usuarioLogado', JSON.stringify({
-                email: iemail,
-                nome: 'Administrador',
-                perfil: 'admin'
-            }));
+    async function entrar() {
+        const email = document.getElementById('iemail').value.trim();
+        const senha = document.getElementById('isenha').value.trim();
+
+        try {
+            const resposta = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const resultado = await resposta.json();
+
+            if (!resposta.ok) {
+                throw new Error(resultado.erro || 'Nao foi possivel fazer login.');
+            }
+
+            localStorage.setItem(SESSION_KEY, JSON.stringify(resultado.usuario));
+
             Swal.fire({
-                title: "Bem-vindo, ADM!",
-                text: "Login realizado com sucesso!",
-                icon: "success"
-
+                title: `Bem-vindo, ${resultado.usuario.nome}!`,
+                text: 'Login realizado com sucesso.',
+                icon: 'success'
             }).then(() => {
                 window.location.href = 'dashboard.html';
             });
-        } else if (iemail === 'aluno@gmail.com' && isenha === '12345') {
-            localStorage.setItem('usuarioLogado', JSON.stringify({
-                email: iemail,
-                nome: 'Aluno',
-                perfil: 'aluno'
-            }));
+        } catch (erro) {
             Swal.fire({
-                title: "Bem-vindo, Aluno!",
-                text: "Acesso liberado para visualizar a fila do almoço.",
-                icon: "success"
-            }).then(() => {
-                window.location.href = 'dashboard.html';
-            });
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Email ou senha incorretos!",
-                footer: '<a href="#">Why do I have this issue?</a>'
+                icon: 'error',
+                title: 'Falha no login',
+                text: erro.message
             });
         }
     }
 
     if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
             entrar();
         });
     }
 });
-
-
-

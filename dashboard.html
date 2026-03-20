@@ -18,7 +18,7 @@
         </button>
         <div class="user-info">
             <i class="fa-solid fa-user"></i>
-            <span>Administrador</span>
+            <span id="user-name">Administrador</span>
         </div>
 
         <nav>
@@ -48,7 +48,7 @@
              <i class="fa-solid fa-bars"></i>
             </button>
             <h1 class="topbar-title">Fila do Almoço</h1>
-            <a href="index.html" class="btn-sair">Sair</a>
+            <a href="index.html" class="btn-sair" id="btn-sair">Sair</a>
         </header>
 
         <main class="dashboard-container">
@@ -72,58 +72,25 @@
 
             <section class="view-panel" data-view-panel="faltas">
                 <div class="card wide">
-                    <h2>Faltas por Turma</h2>
-                    <p>Visualize faltas diárias, semanais e mensais</p>
+                    <h2>Resumo de Faltas</h2>
+                    <p>Painéis calculados automaticamente com base nos dados atuais</p>
 
                     <div class="tabs">
-                        <button class="tab-btn active" data-period="diario">Diárias</button>
-                        <button class="tab-btn" data-period="semanal">Semanais</button>
-                        <button class="tab-btn" data-period="mensal">Mensais</button>
+                        <button class="tab-btn active" data-period="totais">Totais</button>
+                        <button class="tab-btn" data-period="medias">Médias</button>
+                        <button class="tab-btn" data-period="ranking">Ranking</button>
                     </div>
 
-                    <div class="period-panel active" data-period-panel="diario">
-                        <div class="turma-grid">
-                            <div class="turma-card"><strong>Redes 1</strong><span>2 faltas hoje</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 1</strong><span>1 falta hoje</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 2</strong><span>3 faltas hoje</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 3</strong><span>0 faltas hoje</span></div>
-                            <div class="turma-card"><strong>Multimídia 1</strong><span>1 falta hoje</span></div>
-                            <div class="turma-card"><strong>Multimídia 2</strong><span>2 faltas hoje</span></div>
-                            <div class="turma-card"><strong>Multimídia 3</strong><span>0 faltas hoje</span></div>
-                            <div class="turma-card"><strong>Contabilidade 1</strong><span>2 faltas hoje</span></div>
-                            <div class="turma-card"><strong>Contabilidade 2</strong><span>1 falta hoje</span></div>
-                            <div class="turma-card"><strong>Contabilidade 3</strong><span>3 faltas hoje</span></div>
-                        </div>
+                    <div class="period-panel active" data-period-panel="totais">
+                        <div class="turma-grid" id="relatorio-totais"></div>
                     </div>
 
-                    <div class="period-panel" data-period-panel="semanal">
-                        <div class="turma-grid">
-                            <div class="turma-card"><strong>Redes 1</strong><span>9 faltas semana</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 1</strong><span>6 faltas semana</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 2</strong><span>12 faltas semana</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 3</strong><span>4 faltas semana</span></div>
-                            <div class="turma-card"><strong>Multimídia 1</strong><span>5 faltas semana</span></div>
-                            <div class="turma-card"><strong>Multimídia 2</strong><span>7 faltas semana</span></div>
-                            <div class="turma-card"><strong>Multimídia 3</strong><span>3 faltas semana</span></div>
-                            <div class="turma-card"><strong>Contabilidade 1</strong><span>8 faltas semana</span></div>
-                            <div class="turma-card"><strong>Contabilidade 2</strong><span>6 faltas semana</span></div>
-                            <div class="turma-card"><strong>Contabilidade 3</strong><span>11 faltas semana</span></div>
-                        </div>
+                    <div class="period-panel" data-period-panel="medias">
+                        <div class="turma-grid" id="relatorio-medias"></div>
                     </div>
 
-                    <div class="period-panel" data-period-panel="mensal">
-                        <div class="turma-grid">
-                            <div class="turma-card"><strong>Redes 1</strong><span>28 faltas mês</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 1</strong><span>21 faltas mês</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 2</strong><span>34 faltas mês</span></div>
-                            <div class="turma-card"><strong>Des. Sistemas 3</strong><span>17 faltas mês</span></div>
-                            <div class="turma-card"><strong>Multimídia 1</strong><span>19 faltas mês</span></div>
-                            <div class="turma-card"><strong>Multimídia 2</strong><span>23 faltas mês</span></div>
-                            <div class="turma-card"><strong>Multimídia 3</strong><span>14 faltas mês</span></div>
-                            <div class="turma-card"><strong>Contabilidade 1</strong><span>26 faltas mês</span></div>
-                            <div class="turma-card"><strong>Contabilidade 2</strong><span>20 faltas mês</span></div>
-                            <div class="turma-card"><strong>Contabilidade 3</strong><span>31 faltas mês</span></div>
-                        </div>
+                    <div class="period-panel" data-period-panel="ranking">
+                        <div class="turma-grid" id="relatorio-ranking"></div>
                     </div>
                 </div>
             </section>

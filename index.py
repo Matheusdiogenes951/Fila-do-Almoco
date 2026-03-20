@@ -1,6 +1,10 @@
-from flask import Flask, jsonify, request # Só adicionei o request aqui para poder ler o JSON
+from copy import deepcopy
+from pathlib import Path
 
-app = Flask(__name__)
+from flask import Flask, jsonify, request, send_from_directory
+
+BASE_DIR = Path(__file__).resolve().parent
+app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 
 # --- DADOS INTEGRADOS ---
 dados_escola = {
@@ -17,52 +21,227 @@ dados_escola = {
 }
 
 
-# ROTAS DA API 
+TURMA_LABELS = {
+    "REDES1": "Redes 1",
+    "DS1": "Des. Sistemas 1",
+    "DS2": "Des. Sistemas 2",
+    "DS3": "Des. Sistemas 3",
+    "MULTI1": "Multimidia 1",
+    "MULTI2": "Multimidia 2",
+    "MULTI3": "Multimidia 3",
+    "CTB1": "Contabilidade 1",
+    "CTB2": "Contabilidade 2",
+    "CTB3": "Contabilidade 3",
+}
 
-# 1. Listar tudo
-@app.route('/alunos', methods=['GET'])
-def listar_tudo():
-    return jsonify(dados_escola)
+USUARIOS = {
+    "adm@gmail.com": {"senha": "12345", "nome": "Administrador", "perfil": "admin"},
+    "aluno@gmail.com": {"senha": "12345", "nome": "Aluno", "perfil": "aluno"},
+}
 
-# 2. Buscar por sala
-# Rota Original 2
-@app.route('/alunos/<sala_nome>', methods=['GET'])
-def buscar_sala(sala_nome):
-    # 1. Transformamos o nome da sala em maiúsculas (ex: ds3 -> DS3)
-    sala = sala_nome.upper()
-    
-    # 2. Verificamos se essa sala existe no nosso dicionário 'dados_escola'
-    if sala in dados_escola:
-        # 3. Se existir, retornamos a lista de alunos daquela sala
-        return jsonify({sala: dados_escola[sala]})
-    
-    # 4. Se não existir, retornamos erro 404
-    return jsonify({"erro": "Sala não encontrada"}), 404
-# 3. Criar Aluno (POST)
-@app.route('/alunos/novo', methods=['POST'])
+
+def montar_turmas():
+    turmas = {}
+    for codigo, alunos in dados_escola.items():
+        turmas[codigo] = {
+            "codigo": codigo,
+            "nome": TURMA_LABELS.get(codigo, codigo),
+            "alunos": [
+                {"id": f"{codigo}-{indice}", "nome": nome, "faltas": 0}
+                for indice, nome in enumerate(alunos, start=1)
+            ],
+        }
+    return turmas
+
+
+turmas_db = montar_turmas()
+
+
+def serializar_turma(turma):
+    alunos = sorted(
+        turma["alunos"],
+        key=lambda aluno: (aluno["nome"].casefold(), aluno["id"]),
+    )
+    return {
+        "codigo": turma["codigo"],
+        "nome": turma["nome"],
+        "total_faltas": sum(aluno["faltas"] for aluno in alunos),
+        "total_alunos": len(alunos),
+        "alunos": deepcopy(alunos),
+    }
+
+
+def listar_turmas_serializadas():
+    return sorted(
+        [serializar_turma(turma) for turma in turmas_db.values()],
+        key=lambda turma: turma["nome"],
+    )
+
+
+def buscar_turma_ou_404(codigo):
+    turma = turmas_db.get(codigo.upper())
+    if turma is None:
+        return None, (jsonify({"erro": "Turma nao encontrada"}), 404)
+    return turma, None
+
+
+def buscar_aluno(turma, aluno_id):
+    for aluno in turma["alunos"]:
+        if aluno["id"] == aluno_id:
+            return aluno
+    return None
+
+
+@app.get("/")
+def pagina_inicial():
+    return send_from_directory(BASE_DIR, "index.html")
+
+
+@app.get("/login")
+def pagina_login():
+    return send_from_directory(BASE_DIR, "login.html")
+
+
+@app.get("/dashboard")
+def pagina_dashboard():
+    return send_from_directory(BASE_DIR, "dashboard.html")
+
+
+@app.post("/api/auth/login")
+def login():
+    dados = request.get_json(silent=True) or {}
+    email = (dados.get("email") or "").strip().lower()
+    senha = (dados.get("senha") or "").strip()
+
+    if not email or not senha:
+        return jsonify({"erro": "Email e senha sao obrigatorios"}), 400
+
+    usuario = USUARIOS.get(email)
+    if usuario is None or usuario["senha"] != senha:
+        return jsonify({"erro": "Credenciais invalidas"}), 401
+
+    return jsonify(
+        {
+            "usuario": {
+                "email": email,
+                "nome": usuario["nome"],
+                "perfil": usuario["perfil"],
+            }
+        }
+    )
+
+
+@app.get("/api/turmas")
+def listar_turmas():
+    return jsonify({"turmas": listar_turmas_serializadas()})
+
+
+@app.get("/api/turmas/<codigo>")
+def detalhar_turma(codigo):
+    turma, erro = buscar_turma_ou_404(codigo)
+    if erro:
+        return erro
+    return jsonify({"turma": serializar_turma(turma)})
+
+
+@app.post("/api/turmas/<codigo>/alunos")
 def criar_aluno():
-    dados = request.get_json()
-    nome = dados.get('nome')
-    sala = dados.get('sala', '').upper()
+    turma, erro = buscar_turma_ou_404(codigo)
+    if erro:
+        return erro
 
-    if sala in dados_escola:
-        dados_escola[sala].append(nome)
-        return jsonify({"status": "sucesso", "mensagem": f"{nome} adicionado a {sala}"}), 201
-    return jsonify({"erro": "Sala não encontrada"}), 404
+    dados = request.get_json(silent=True) or {}
+    nome = (dados.get("nome") or "").strip()
+    if not nome:
+        return jsonify({"erro": "Nome do aluno e obrigatorio"}), 400
 
-# 4. Deletar Aluno (DELETE)
-@app.route('/alunos/remover/<nome>', methods=['DELETE'])
+    aluno_id = f"{turma['codigo']}-{len(turma['alunos']) + 1}"
+    turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0})
+    return jsonify({"mensagem": "Aluno adicionado com sucesso", "turma": serializar_turma(turma)}), 201
+
+
+@app.delete("/api/turmas/<codigo>/alunos/<aluno_id>")
+def remover_aluno(codigo, aluno_id):
+    turma, erro = buscar_turma_ou_404(codigo)
+    if erro:
+        return erro
+
+    aluno = buscar_aluno(turma, aluno_id)
+    if aluno is None:
+        return jsonify({"erro": "Aluno nao encontrado"}), 404
+
+    turma["alunos"] = [item for item in turma["alunos"] if item["id"] != aluno_id]
+    return jsonify({"mensagem": "Aluno removido com sucesso", "turma": serializar_turma(turma)})
+
+
+@app.patch("/api/turmas/<codigo>/alunos/<aluno_id>/faltas")
+def atualizar_faltas(codigo, aluno_id):
+    turma, erro = buscar_turma_ou_404(codigo)
+    if erro:
+        return erro
+
+    aluno = buscar_aluno(turma, aluno_id)
+    if aluno is None:
+        return jsonify({"erro": "Aluno nao encontrado"}), 404
+
+    dados = request.get_json(silent=True) or {}
+    operacao = (dados.get("operacao") or "").strip().lower()
+
+    if operacao == "adicionar":
+        aluno["faltas"] += 1
+    elif operacao == "remover":
+        aluno["faltas"] = max(0, aluno["faltas"] - 1)
+    else:
+        return jsonify({"erro": "Operacao invalida"}), 400
+
+    return jsonify({"mensagem": "Faltas atualizadas com sucesso", "turma": serializar_turma(turma)})
+
+
+@app.get("/alunos")
+def listar_tudo():
+    return jsonify(
+        {
+            codigo: [aluno["nome"] for aluno in turma["alunos"]]
+            for codigo, turma in turmas_db.items()
+        }
+    )
+
+
+@app.get("/alunos/<sala_nome>")
+def buscar_sala(sala_nome):
+    turma, erro = buscar_turma_ou_404(sala_nome)
+    if erro:
+        return jsonify({"erro": "Sala nao encontrada"}), 404
+    return jsonify({turma["codigo"]: [aluno["nome"] for aluno in turma["alunos"]]})
+
+
+@app.post("/alunos/novo")
+def criar_aluno_compat():
+    dados = request.get_json(silent=True) or {}
+    sala = (dados.get("sala") or "").upper()
+    turma, erro = buscar_turma_ou_404(sala)
+    if erro:
+        return jsonify({"erro": "Sala nao encontrada"}), 404
+
+    nome = (dados.get("nome") or "").strip()
+    if not nome:
+        return jsonify({"erro": "Nome do aluno e obrigatorio"}), 400
+
+    aluno_id = f"{turma['codigo']}-{len(turma['alunos']) + 1}"
+    turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0})
+    return jsonify({"status": "sucesso", "mensagem": f"{nome} adicionado a {sala}"}), 201
+
+
+@app.delete("/alunos/remover/<nome>")
 def deletar_aluno(nome):
-    nome_procurado = nome.upper()
-    for sala in dados_escola:
-        lista_nomes_up = [n.upper() for n in dados_escola[sala]]
-        
-        if nome_procurado in lista_nomes_up:
-            index = lista_nomes_up.index(nome_procurado)
-            nome_removido = dados_escola[sala].pop(index)
-            return jsonify({"status": "removido", "aluno": nome_removido}), 200
-            
-    return jsonify({"erro": "Aluno não encontrado"}), 404
+    nome_procurado = nome.strip().casefold()
+    for turma in turmas_db.values():
+        for aluno in turma["alunos"]:
+            if aluno["nome"].casefold() == nome_procurado:
+                turma["alunos"] = [item for item in turma["alunos"] if item["id"] != aluno["id"]]
+                return jsonify({"status": "removido", "aluno": aluno["nome"]}), 200
+
+    return jsonify({"erro": "Aluno nao encontrado"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
