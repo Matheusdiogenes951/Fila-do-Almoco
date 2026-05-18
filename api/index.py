@@ -3,7 +3,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 
 # --- DADOS INTEGRADOS ---
@@ -19,7 +19,6 @@ dados_escola = {
     "MULTI3": ["ABRAÃO MOURÃO DA SILVA", "AISHA ARIANE MARINHO TEXEIRA", "ALANA KIMBERLY MARQUES GUERRA", "ALANA VITORIA CARVALHO ROCHA", "ANA BEATRIZ DE LIMA RIBEIRO", "ANA BEATRIZ OLIVEIRA DE QUEIROZ", "ANA KARLA SANTOS MAGALHÃES", "ANNA ISABELLY DA SILVA DOS ANJOS", "ANNE GABRIELLE PINHEIRO MESTRINHO", "ANTONIO CLAYRTON DOS SANTOS ROCHA JUNIOR", "ARTHUR MORAES RODRIGUES", "ARYANE SOUSA CORREIA", "CLARISSA MIKAELY BRAGA PORTELA", "DIANA GOUVEIA MOREIRA", "EMANUEL DE SOUSA SILVA", "FRANCISCO LUAN SOUSA DE OLIVEIRA", "GABRIELLA DE SOUSA GONSALVES", "HADA HELLEN ALVES ALMEIDA", "HELEN GOUVEIA MOREIRA", "IARA MARIA SOBREIRA DE SOUSA", "ISABEL CRISTINA DA SILVA BARROS", "ISABELLE TRAJANO DE CASTRO SOUSA", "ISABELLY DE SOUSA LUCAS", "JOANA MIGUEL DOS SANTOS", "KAYLANNE PRUDENCIO DA SILVA", "KEVIN LEANDRO BARBOSA MURTA", "LETICIA COSTA MENDES", "LETICIA COUTO ARAUJO", "LUCAS BARBOSA VIEIRA", "MARIA EDUARDA LOPES MENDES", "MARIA KAROLINE SARAIVA DA SILVA", "MARIA PAULA FACUNDO DA COSTA", "MARIA TAYNARA LIMA ALVES", "MARINA FALCÃO LIMA", "MIQUEIAS CAMPOS DA SIVA", "MONICA VIEIRA DE SOUZA", "PEROLA YASMIM PASSOS DOS SANTOS", "RAMON VITOR DOS SANTOS RODRIGUES", "SARA MICAELE NUNES SOUSA", "SOFIA DE MATOS BARROS", "TAILA DE SOUSA SANTOS", "YASMIM FERNANDES NOGUEIRA"],
     "CTB3": ["ADRIANE NOGUEIRA ALVES", "ALAN VINICIUS DA SILVA MONTEIRO", "ANA LARA LIMA DE SOUZA", "ANA PAULA RODRIGUES FAUSTINO", "ANTONIA GRAZIELLY FERREIRA DA SILVA", "ANTONIA HORTENCIA ASSUNÇÃO DE SILVA", "EMILLY VITORIA ROFINO DE LIMA", "FRANCISCO RIKELVI DA SILVA DE OLIVEIRA VIEIRA", "GABRIELA ARAUJO MAGNO", "HAVYLA FERREIRA DE OLIVEIRA", "ISIS RODRIGUES HENRIQUE", "JOÃO ARTUR BENEDITO NOGUEIRA", "JOÃO GUILHERME VIEIRA TORQUATO", "JOÃO VICTOR NUNES DANTAS", "JOÃO VITOR DE JESUS DOS ANJOS", "JOSÉ VINÍCIUS SOUSA FREITAS", "LUIS GUSTAVO FALCÃO FERNANDES", "LUIS KENNEDY FLORENÇA DE LIMA", "MARIA CECILIA MEDEIROS RODRIGUES", "MARIA CLARA DE OLIVEIRA MOURA", "MARIA CLARA RODRIGUES DA SILVA", "MARIA CLARA SILVA SEVERO", "MARIA DE FATIMA RODRIGUES DA SILVA", "MARIA ESTER BRASILEIRO DOS SANTOS", "MARIA ISABELY LEITE AMARANTE", "MARIA SAMIA COSTA DE OLIVEIRA", "MARIANA MAGALHÃES DUARTE DOS SANTOS", "MATHEUS WAGNER DE SOUZA BARBOSA", "NICKOLAS CRIOLLO VINASCO", "NICOLLE GUIMARÃES", "NYCAEL AGUIAR CIRINO", "PEDRO WILKEN ANDRADE DE BRITO", "RYAN CONCEIÇÃO GOMES", "SARA VITÓRIA UCHOA RIBEIRO", "VICTOR HUGO GOMES SANTOS", "VINICIUS FERRER RODRIGUES", "YASMIN FERNANDES PEREIRA"]
 }
-
 
 TURMA_LABELS = {
     "REDES1": "Redes 1",
@@ -39,7 +38,6 @@ USUARIOS = {
     "aluno@gmail.com": {"senha": "12345", "nome": "Aluno", "perfil": "aluno"},
 }
 
-
 def montar_turmas():
     turmas = {}
     for codigo, alunos in dados_escola.items():
@@ -53,9 +51,7 @@ def montar_turmas():
         }
     return turmas
 
-
 turmas_db = montar_turmas()
-
 
 def serializar_turma(turma):
     alunos = sorted(
@@ -70,13 +66,11 @@ def serializar_turma(turma):
         "alunos": deepcopy(alunos),
     }
 
-
 def listar_turmas_serializadas():
     return sorted(
         [serializar_turma(turma) for turma in turmas_db.values()],
         key=lambda turma: turma["nome"],
     )
-
 
 def buscar_turma_ou_404(codigo):
     turma = turmas_db.get(codigo.upper())
@@ -84,57 +78,46 @@ def buscar_turma_ou_404(codigo):
         return None, (jsonify({"erro": "Turma nao encontrada"}), 404)
     return turma, None
 
-
 def buscar_aluno(turma, aluno_id):
     for aluno in turma["alunos"]:
         if aluno["id"] == aluno_id:
             return aluno
     return None
 
-
-@app.get("/")
-def pagina_inicial():
-    return send_from_directory(BASE_DIR, "index.html")
-
-
-@app.get("/login")
-def pagina_login():
-    return send_from_directory(BASE_DIR, "login.html")
-
-
-@app.get("/dashboard")
-def pagina_dashboard():
-    return send_from_directory(BASE_DIR, "dashboard.html")
-
+# ========== ROTAS DA API (PRIMEIRO) ==========
 
 @app.post("/api/auth/login")
 def login():
-    dados = request.get_json(silent=True) or {}
+    """Endpoint de login - retorna sempre JSON"""
+    # Verifica se o Content-Type é JSON
+    if not request.is_json:
+        return jsonify({"erro": "Content-Type deve ser application/json"}), 400
+    
+    dados = request.get_json(silent=True)
+    if not dados:
+        return jsonify({"erro": "Corpo da requisição vazio ou inválido"}), 400
+    
     email = (dados.get("email") or "").strip().lower()
     senha = (dados.get("senha") or "").strip()
 
     if not email or not senha:
-        return jsonify({"erro": "Email e senha sao obrigatorios"}), 400
+        return jsonify({"erro": "Email e senha são obrigatórios"}), 400
 
     usuario = USUARIOS.get(email)
     if usuario is None or usuario["senha"] != senha:
-        return jsonify({"erro": "Credenciais invalidas"}), 401
+        return jsonify({"erro": "Credenciais inválidas"}), 401
 
-    return jsonify(
-        {
-            "usuario": {
-                "email": email,
-                "nome": usuario["nome"],
-                "perfil": usuario["perfil"],
-            }
+    return jsonify({
+        "usuario": {
+            "email": email,
+            "nome": usuario["nome"],
+            "perfil": usuario["perfil"],
         }
-    )
-
+    })
 
 @app.get("/api/turmas")
 def listar_turmas():
     return jsonify({"turmas": listar_turmas_serializadas()})
-
 
 @app.get("/api/turmas/<codigo>")
 def detalhar_turma(codigo):
@@ -143,9 +126,8 @@ def detalhar_turma(codigo):
         return erro
     return jsonify({"turma": serializar_turma(turma)})
 
-
 @app.post("/api/turmas/<codigo>/alunos")
-def criar_aluno():
+def criar_aluno(codigo):
     turma, erro = buscar_turma_ou_404(codigo)
     if erro:
         return erro
@@ -153,12 +135,11 @@ def criar_aluno():
     dados = request.get_json(silent=True) or {}
     nome = (dados.get("nome") or "").strip()
     if not nome:
-        return jsonify({"erro": "Nome do aluno e obrigatorio"}), 400
+        return jsonify({"erro": "Nome do aluno é obrigatório"}), 400
 
     aluno_id = f"{turma['codigo']}-{len(turma['alunos']) + 1}"
     turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0})
     return jsonify({"mensagem": "Aluno adicionado com sucesso", "turma": serializar_turma(turma)}), 201
-
 
 @app.delete("/api/turmas/<codigo>/alunos/<aluno_id>")
 def remover_aluno(codigo, aluno_id):
@@ -172,7 +153,6 @@ def remover_aluno(codigo, aluno_id):
 
     turma["alunos"] = [item for item in turma["alunos"] if item["id"] != aluno_id]
     return jsonify({"mensagem": "Aluno removido com sucesso", "turma": serializar_turma(turma)})
-
 
 @app.patch("/api/turmas/<codigo>/alunos/<aluno_id>/faltas")
 def atualizar_faltas(codigo, aluno_id):
@@ -192,20 +172,35 @@ def atualizar_faltas(codigo, aluno_id):
     elif operacao == "remover":
         aluno["faltas"] = max(0, aluno["faltas"] - 1)
     else:
-        return jsonify({"erro": "Operacao invalida"}), 400
+        return jsonify({"erro": "Operacao invalida. Use 'adicionar' ou 'remover'"}), 400
 
     return jsonify({"mensagem": "Faltas atualizadas com sucesso", "turma": serializar_turma(turma)})
 
+# ========== ROTAS DE PÁGINAS ==========
+
+@app.get("/")
+def pagina_inicial():
+    """Página inicial (landing page)"""
+    return send_from_directory(BASE_DIR, "index.html")
+
+@app.get("/login")
+def pagina_login():
+    """Página de login"""
+    return send_from_directory(BASE_DIR, "login.html")
+
+@app.get("/dashboard")
+def pagina_dashboard():
+    """Dashboard do sistema (protegido)"""
+    return send_from_directory(BASE_DIR, "dashboard.html")
+
+# ========== ROTAS COMPATÍVEIS (LEGADO) ==========
 
 @app.get("/alunos")
 def listar_tudo():
-    return jsonify(
-        {
-            codigo: [aluno["nome"] for aluno in turma["alunos"]]
-            for codigo, turma in turmas_db.items()
-        }
-    )
-
+    return jsonify({
+        codigo: [aluno["nome"] for aluno in turma["alunos"]]
+        for codigo, turma in turmas_db.items()
+    })
 
 @app.get("/alunos/<sala_nome>")
 def buscar_sala(sala_nome):
@@ -213,7 +208,6 @@ def buscar_sala(sala_nome):
     if erro:
         return jsonify({"erro": "Sala nao encontrada"}), 404
     return jsonify({turma["codigo"]: [aluno["nome"] for aluno in turma["alunos"]]})
-
 
 @app.post("/alunos/novo")
 def criar_aluno_compat():
@@ -231,7 +225,6 @@ def criar_aluno_compat():
     turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0})
     return jsonify({"status": "sucesso", "mensagem": f"{nome} adicionado a {sala}"}), 201
 
-
 @app.delete("/alunos/remover/<nome>")
 def deletar_aluno(nome):
     nome_procurado = nome.strip().casefold()
@@ -240,10 +233,7 @@ def deletar_aluno(nome):
             if aluno["nome"].casefold() == nome_procurado:
                 turma["alunos"] = [item for item in turma["alunos"] if item["id"] != aluno["id"]]
                 return jsonify({"status": "removido", "aluno": aluno["nome"]}), 200
-
     return jsonify({"erro": "Aluno nao encontrado"}), 404
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
+#if __name__ == '__main__':
+  #  app.run(debug=True, host='127.0.0.1', port=5000)
