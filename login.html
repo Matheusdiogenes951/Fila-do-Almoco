@@ -1,41 +1,70 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | Fila do Almoço</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilos/style.css">
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="login-html">
-    <main>
+    <main class="login-shell">
+        <section class="login-identity">
+            <div class="school-symbol">
+                <span class="material-symbols-outlined" aria-hidden="true">school</span>
+            </div>
+            <h1>EEEP Comendador Miguel Gurgel</h1>
+            <p>Gestão da Fila do Almoço</p>
+        </section>
 
-        <section id="login">
+        <section id="login" class="login-card">
             <div id="formulario">
-                <img src="imagens/logo-horizontal-min.jpeg" alt="Logo do Sistema de Faltas">
-                <h1>Seja bem-vindo!</h1>
-                
+                <div class="login-heading">
+                    <h2>Seja bem-vindo!</h2>
+                    <p>Insira suas credenciais para continuar.</p>
+                </div>
+
                 <form id="login-form">
-
-                    <div class="campo">
-                        <label for="iemail">Email</label>
-                        <input type="email" name="email" id="iemail" placeholder="Seu email" required>
+                    <div class="campo input-icon">
+                        <label for="iemail">E-mail</label>
+                        <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+                        <input type="email" name="email" id="iemail" placeholder="seu@email.com" required>
                     </div>
 
-                    <div class="campo">
+                    <div class="campo input-icon password-field">
                         <label for="isenha">Senha</label>
+                        <span class="material-symbols-outlined" aria-hidden="true">lock</span>
                         <input type="password" name="senha" id="isenha" placeholder="Sua senha" required>
+                        <button class="password-toggle" type="button" aria-label="Mostrar senha">
+                            <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                        </button>
                     </div>
 
-                    <button type="submit">Entrar</button>
+                    <button class="btn-submit" type="submit">
+                        Entrar
+                        <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                    </button>
                 </form>
-                <a href="index.html" class="btn-voltar">Voltar</a>
+
+                <div class="login-secondary">
+                    <a href="/" class="btn-voltar">
+                        <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+                        Voltar
+                    </a>
+                </div>
             </div>
         </section>
 
+        <div class="login-logos" aria-label="Identidade institucional">
+            <img src="imagens/brasao.png" alt="Brasão">
+            <span></span>
+            <img src="imagens/logo-horizontal-min.jpeg" alt="Logo institucional">
+        </div>
     </main>
     <script src="scripts/login.js" defer></script>
 </body>
-
 </html>

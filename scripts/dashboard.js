@@ -24,12 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const relatorioTotais = document.getElementById('relatorio-totais');
     const relatorioMedias = document.getElementById('relatorio-medias');
     const relatorioRanking = document.getElementById('relatorio-ranking');
+    const filaDestaqueNome = document.getElementById('fila-destaque-nome');
+    const filaDestaqueFaltas = document.getElementById('fila-destaque-faltas');
+    const filaTotal = document.getElementById('fila-total');
+    const studentCount = document.getElementById('student-count');
+    const emptyAlunos = document.getElementById('empty-alunos');
+    const statusGeral = document.getElementById('status-geral');
+    const statusGeralTexto = document.getElementById('status-geral-texto');
+    const frequenciaMedia = document.getElementById('frequencia-media');
+    const frequenciaBarra = document.getElementById('frequencia-barra');
 
     if (isFileProtocol) {
         Swal.fire({
             icon: 'warning',
             title: 'Servidor obrigatorio',
-            text: 'Para carregar turmas, alunos e fila, rode "python index.py" e abra http://127.0.0.1:5000/index.html.'
+            text: 'Para carregar turmas, alunos e fila, rode "python3 api/index.py" e abra http://127.0.0.1:5000/.'
         });
         return;
     }
@@ -117,15 +126,42 @@ document.addEventListener('DOMContentLoaded', () => {
         tabelaAlunosBody.innerHTML = '';
 
         if (!turma) {
+            if (studentCount) {
+                studentCount.textContent = '0 ALUNOS';
+            }
+            if (emptyAlunos) {
+                emptyAlunos.classList.add('active');
+            }
             return;
+        }
+
+        if (studentCount) {
+            studentCount.textContent = `${turma.total_alunos} ALUNO${turma.total_alunos === 1 ? '' : 'S'}`;
+        }
+
+        if (emptyAlunos) {
+            emptyAlunos.classList.toggle('active', turma.alunos.length === 0);
         }
 
         turma.alunos.forEach((aluno) => {
             const row = document.createElement('tr');
+            const iniciais = aluno.nome
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((parte) => parte[0])
+                .join('')
+                .toUpperCase();
+
             row.innerHTML = `
-                <td>${aluno.nome}</td>
+                <td>
+                    <span class="student-name">
+                        <span class="avatar">${iniciais}</span>
+                        <strong>${aluno.nome}</strong>
+                    </span>
+                </td>
                 <td><span class="badge">${aluno.faltas}</span></td>
-                <td><button class="btn-remove btn-inline" data-id="${aluno.id}">Remover</button></td>
+                <td><button class="btn-inline" data-id="${aluno.id}">Remover</button></td>
             `;
             tabelaAlunosBody.appendChild(row);
         });
@@ -140,10 +176,27 @@ document.addEventListener('DOMContentLoaded', () => {
             .sort((a, b) => a.total_faltas - b.total_faltas || a.nome.localeCompare(b.nome));
 
         filaMenos.innerHTML = '';
+        if (filaTotal) {
+            filaTotal.textContent = `Exibindo ${fila.length} turma${fila.length === 1 ? '' : 's'}`;
+        }
 
-        fila.forEach((item) => {
+        if (fila[0]) {
+            filaDestaqueNome.textContent = fila[0].nome;
+            filaDestaqueFaltas.textContent = `${fila[0].total_faltas} falta${fila[0].total_faltas === 1 ? '' : 's'} registrada${fila[0].total_faltas === 1 ? '' : 's'}`;
+        }
+
+        fila.forEach((item, index) => {
             const row = document.createElement('li');
-            row.innerHTML = `<span>${item.nome}</span><span class="badge">${item.total_faltas}</span>`;
+            row.innerHTML = `
+                <span class="ranking-class">
+                    <span class="ranking-position">${index + 1}º</span>
+                    <span>
+                        <span class="ranking-name">${item.nome}</span>
+                        <span class="ranking-meta">Turma técnica</span>
+                    </span>
+                </span>
+                <span class="badge">${item.total_faltas} falta${item.total_faltas === 1 ? '' : 's'}</span>
+            `;
             filaMenos.appendChild(row);
         });
     }
@@ -154,16 +207,44 @@ document.addEventListener('DOMContentLoaded', () => {
         relatorioMedias.innerHTML = '';
         relatorioRanking.innerHTML = '';
 
+        const totalAlunos = state.turmas.reduce((total, turma) => total + turma.total_alunos, 0);
+        const totalFaltas = state.turmas.reduce((total, turma) => total + turma.total_faltas, 0);
+        const frequencia = totalAlunos ? Math.max(0, Math.round(((totalAlunos - totalFaltas) / totalAlunos) * 100)) : 100;
+
+        if (statusGeral && statusGeralTexto) {
+            statusGeral.textContent = totalFaltas === 0 ? 'Excelente' : totalFaltas <= 10 ? 'Atenção leve' : 'Revisar fila';
+            statusGeralTexto.textContent = totalFaltas === 0
+                ? 'Nenhuma falta acumulada detectada nas turmas monitoradas até o momento.'
+                : `${totalFaltas} falta${totalFaltas === 1 ? '' : 's'} registrada${totalFaltas === 1 ? '' : 's'} nas turmas monitoradas.`;
+        }
+
+        if (frequenciaMedia && frequenciaBarra) {
+            frequenciaMedia.textContent = `${frequencia}%`;
+            frequenciaBarra.style.width = `${frequencia}%`;
+        }
+
         turmasOrdenadas.forEach((turma) => {
             const totalCard = document.createElement('div');
             totalCard.className = 'turma-card';
-            totalCard.innerHTML = `<strong>${turma.nome}</strong><span>${turma.total_faltas} faltas acumuladas</span>`;
+            totalCard.innerHTML = `
+                <div class="turma-card-icon"><span class="material-symbols-outlined">groups</span></div>
+                <div>
+                    <strong>${turma.nome}</strong>
+                    <span>${turma.total_faltas} falta${turma.total_faltas === 1 ? '' : 's'} acumulada${turma.total_faltas === 1 ? '' : 's'}</span>
+                </div>
+            `;
             relatorioTotais.appendChild(totalCard);
 
             const media = turma.total_alunos ? (turma.total_faltas / turma.total_alunos).toFixed(2) : '0.00';
             const mediaCard = document.createElement('div');
             mediaCard.className = 'turma-card';
-            mediaCard.innerHTML = `<strong>${turma.nome}</strong><span>${media} faltas por aluno</span>`;
+            mediaCard.innerHTML = `
+                <div class="turma-card-icon"><span class="material-symbols-outlined">monitoring</span></div>
+                <div>
+                    <strong>${turma.nome}</strong>
+                    <span>${media} faltas por aluno</span>
+                </div>
+            `;
             relatorioMedias.appendChild(mediaCard);
         });
 
@@ -179,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ranking.length) {
             const card = document.createElement('div');
             card.className = 'turma-card';
-            card.innerHTML = '<strong>Sem dados</strong><span>Nenhum aluno cadastrado.</span>';
+            card.innerHTML = '<div class="turma-card-icon"><span class="material-symbols-outlined">group_off</span></div><div><strong>Sem dados</strong><span>Nenhum aluno cadastrado.</span></div>';
             relatorioRanking.appendChild(card);
             return;
         }
@@ -187,7 +268,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ranking.forEach((item) => {
             const rankingCard = document.createElement('div');
             rankingCard.className = 'turma-card';
-            rankingCard.innerHTML = `<strong>${item.nome}</strong><span>${item.turma} - ${item.faltas} faltas</span>`;
+            rankingCard.innerHTML = `
+                <div class="turma-card-icon"><span class="material-symbols-outlined">person</span></div>
+                <div>
+                    <strong>${item.nome}</strong>
+                    <span>${item.turma} - ${item.faltas} falta${item.faltas === 1 ? '' : 's'}</span>
+                </div>
+            `;
             relatorioRanking.appendChild(rankingCard);
         });
     }
@@ -202,7 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        faltasAtual.textContent = `Faltas atuais de ${aluno.nome}: ${aluno.faltas}`;
+        const situacao = aluno.faltas >= 3 ? 'Atenção na ordem da fila' : 'Regularizado';
+        faltasAtual.innerHTML = `<strong>${aluno.faltas}</strong>${aluno.nome}<br>${situacao}`;
     }
 
     function sincronizarTurmaSelecionada(codigoTurma) {
@@ -239,12 +327,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault();
                 const view = link.dataset.view;
 
-                navLinks.forEach((item) => item.classList.remove('active'));
-                link.classList.add('active');
+                navLinks.forEach((item) => {
+                    item.classList.toggle('active', item.dataset.view === view);
+                });
 
                 viewPanels.forEach((panel) => {
                     panel.classList.toggle('active', panel.dataset.viewPanel === view);
                 });
+
+                sidebar.classList.remove('active');
             });
         });
 

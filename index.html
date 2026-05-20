@@ -1,37 +1,110 @@
-﻿<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fila do Almoço</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilos/style.css">
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
 </head>
 <body class="index-html">
-    <div class="index-page">
-        <header class="index-topbar">
-            <a href="index.html" class="index-brand">Fila do Almoço</a>
-            <nav class="index-nav">
-                <a href="login.html" class="btn-entrar">Entrar <span aria-hidden="true">></span></a>
-            </nav>
-        </header>
+    <header class="site-topbar">
+        <a href="/" class="brand-mark">
+            <span class="material-symbols-outlined" aria-hidden="true">school</span>
+            <span>Fila do Almoço</span>
+        </a>
+        <a href="/login" class="topbar-action">Entrar</a>
+    </header>
 
-        <main class="index-main">
-            <section class="index-hero" id="sobre">
-                <h1>Fila do Almoço</h1>
-                <p>Gerencie filas e faltas de forma rápida e prática na EEEP Comendador Miguel Gurgel.</p>
-                <img src="imagens/index.png" alt="Ilustração do sistema de faltas" class="index-hero-image">
-            </section>
-        </main>
-
-        <footer id="contato" class="index-footer">
-            <div class="index-footer-content">
-                <p><strong>EEEP Comendador Miguel Gurgel</strong></p>
-                <p class="footer-subtitle">Sistema de gerenciamento de faltas e vercionamento de filas com base em faltas!</p>
+    <main class="landing-main">
+        <section class="landing-hero reveal">
+            <div class="landing-copy">
+                <span class="eyebrow">
+                    <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+                    EEEP Comendador Miguel Gurgel
+                </span>
+                <h1>A gestão do seu refeitório agora é <strong>inteligente.</strong></h1>
+                <p>Otimize o tempo de almoço com controle digital de filas e faltas. Simplicidade para gestores, eficiência para alunos.</p>
+                <div class="hero-actions">
+                    <a href="/login" class="btn-primary">Entrar</a>
+                    <a href="#funcionalidades" class="btn-outline">Saber mais</a>
+                </div>
             </div>
-        </footer>
-    </div>
+
+            <div class="hero-visual">
+                <div class="image-card">
+                    <img src="imagens/index.png" alt="Ilustração do sistema Fila do Almoço">
+                    <div class="next-class-card">
+                        <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+                        <div>
+                            <small>Próxima Turma</small>
+                            <strong>Menos faltas</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section reveal" id="funcionalidades">
+            <div class="section-heading">
+                <h2>Funcionalidades Essenciais</h2>
+                <p>Tudo o que você precisa para manter o refeitório funcionando sem filas desnecessárias.</p>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card feature-card-wide">
+                    <div class="feature-icon">
+                        <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+                    </div>
+                    <span class="pill">Tempo real</span>
+                    <h3>Relatórios Detalhados</h3>
+                    <p>Analise faltas por turma e acompanhe a ordem da fila com base nos dados atuais.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon secondary">
+                        <span class="material-symbols-outlined" aria-hidden="true">person_off</span>
+                    </div>
+                    <h3>Gestão de Faltas</h3>
+                    <p>Registre e retire faltas rapidamente para manter a fila organizada.</p>
+                </article>
+
+                <article class="feature-card image-feature">
+                    <img src="imagens/logo-horizontal.png" alt="Identidade da escola">
+                    <div>
+                        <h3>Comunidade Ativa</h3>
+                        <p>Alunos e administração integrados em um só painel.</p>
+                    </div>
+                </article>
+
+                <article class="feature-card feature-card-wide row-card">
+                    <div class="feature-icon">
+                        <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+                    </div>
+                    <div>
+                        <h3>Chamada por Turmas</h3>
+                        <p>Libere as turmas de forma escalonada, evitando aglomerações e atrasos.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="cta-section reveal">
+            <h2>Pronto para digitalizar sua fila?</h2>
+            <p>Use o painel da EEEP Comendador Miguel Gurgel para gerir faltas, turmas e ordem de chamada.</p>
+            <a href="/login" class="btn-light">Começar Agora</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-brand">
+            <span class="material-symbols-outlined" aria-hidden="true">school</span>
+            <strong>Fila do Almoço</strong>
+        </div>
+        <p>© 2026 EEEP Comendador Miguel Gurgel</p>
+    </footer>
 </body>
 </html>
-
-

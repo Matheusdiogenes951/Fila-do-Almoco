@@ -1,11 +1,21 @@
 // scripts/login.js
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
+    const senhaInput = document.getElementById('isenha');
+    const toggleSenha = document.querySelector('.password-toggle');
     const SESSION_KEY = 'usuarioLogado';
 
     if (!form) {
         console.error('Formulário de login não encontrado!');
         return;
+    }
+
+    if (toggleSenha && senhaInput) {
+        toggleSenha.addEventListener('click', () => {
+            const mostrarSenha = senhaInput.type === 'password';
+            senhaInput.type = mostrarSenha ? 'text' : 'password';
+            toggleSenha.querySelector('.material-symbols-outlined').textContent = mostrarSenha ? 'visibility_off' : 'visibility';
+        });
     }
 
     form.addEventListener('submit', async (event) => {

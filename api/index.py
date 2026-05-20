@@ -235,5 +235,5 @@ def deletar_aluno(nome):
                 return jsonify({"status": "removido", "aluno": aluno["nome"]}), 200
     return jsonify({"erro": "Aluno nao encontrado"}), 404
 
-#if __name__ == '__main__':
-  #  app.run(debug=True, host='127.0.0.1', port=5000)
+if __name__ == "__main__":
+    app.run(debug=True, host="127.0.0.1", port=5000)

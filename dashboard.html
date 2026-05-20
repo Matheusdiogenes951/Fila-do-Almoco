@@ -1,124 +1,168 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Fila do Almoço</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilos/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-html">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" aria-label="Menu lateral">
         <button class="sidebar-close" aria-label="Fechar menu">
-            <i class="fa-solid fa-xmark"></i>
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
         </button>
         <div class="user-info">
-            <i class="fa-solid fa-user"></i>
+            <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
             <span id="user-name">Administrador</span>
         </div>
-
-        <nav>
+        <nav class="drawer-nav">
             <a href="#" data-view="home" class="nav-link active">
-                <i class="fa-solid fa-chart-column"></i>
+                <span class="material-symbols-outlined" aria-hidden="true">home</span>
                 <span>Fila</span>
             </a>
             <a href="#" data-view="faltas" class="nav-link">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Relatórios</span>
+                <span class="material-symbols-outlined" aria-hidden="true">person_off</span>
+                <span>Faltas</span>
             </a>
             <a href="#" data-view="alunos" class="nav-link">
-                <i class="fa-solid fa-users"></i>
+                <span class="material-symbols-outlined" aria-hidden="true">groups</span>
                 <span>Turmas</span>
             </a>
             <a href="#" data-view="config" class="nav-link">
-                <i class="fa-solid fa-clipboard-check"></i>
+                <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
                 <span>Registrar</span>
             </a>
         </nav>
     </aside>
 
     <div class="main-content">
-
-        <header class="topbar">
-            <button class="btn-menu">
-             <i class="fa-solid fa-bars"></i>
-            </button>
-            <h1 class="topbar-title">Fila do Almoço</h1>
-            <a href="index.html" class="btn-sair" id="btn-sair">Sair</a>
+        <header class="app-topbar">
+            <div class="topbar-left">
+                <button class="btn-menu" aria-label="Abrir menu">
+                    <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+                </button>
+                <a href="/dashboard" class="brand-mark">
+                    <span class="material-symbols-outlined" aria-hidden="true">school</span>
+                    <span>Fila do Almoço</span>
+                </a>
+            </div>
+            <a href="/" class="btn-sair" id="btn-sair">Sair</a>
         </header>
 
         <main class="dashboard-container">
             <section class="view-panel active" data-view-panel="home">
-                <div class="card wide">
-                    <div class="card-header">
-                        <div>
-                            <h2>Fila do Almoço</h2>
-                            <p>Ordem baseada na soma de faltas por turma</p>
-                        </div>
-                    </div>
+                <div class="dashboard-heading">
+                    <h1>Ordem das turmas</h1>
+                    <p>Prioridade definida pelo menor número de faltas registradas.</p>
+                </div>
 
-                    <div class="queue-grid">
-                        <div class="queue-card">
-                            <h3>Ordem das turmas (menos faltas)</h3>
-                            <ol class="queue-list" id="fila-menos"></ol>
+                <div class="ranking-layout">
+                    <aside class="podium-column">
+                        <div class="glass-panel podium-card">
+                            <div class="podium-icon">
+                                <span class="material-symbols-outlined" aria-hidden="true">emoji_events</span>
+                            </div>
+                            <span class="label-code">Primeiro Lugar</span>
+                            <h2 id="fila-destaque-nome">Carregando...</h2>
+                            <div class="pill strong" id="fila-destaque-faltas">0 faltas registradas</div>
                         </div>
-                    </div>
+                        <img class="dashboard-photo" src="imagens/logo-horizontal.png" alt="Logo da escola">
+                    </aside>
+
+                    <section class="ranking-list-panel">
+                        <div class="list-toolbar">
+                            <span class="label-code" id="fila-total">Exibindo turmas</span>
+                            <span class="sort-label">
+                                <span class="material-symbols-outlined" aria-hidden="true">sort</span>
+                                Menos faltas
+                            </span>
+                        </div>
+                        <ol class="queue-list ranking-list" id="fila-menos"></ol>
+                    </section>
                 </div>
             </section>
 
             <section class="view-panel" data-view-panel="faltas">
-                <div class="card wide">
-                    <h2>Resumo de Faltas</h2>
-                    <p>Painéis calculados automaticamente com base nos dados atuais</p>
+                <div class="dashboard-heading">
+                    <h1>Resumo de Faltas</h1>
+                    <p>Painéis calculados automaticamente com base nos dados atuais.</p>
+                </div>
 
-                    <div class="tabs">
-                        <button class="tab-btn active" data-period="totais">Totais</button>
-                        <button class="tab-btn" data-period="medias">Médias</button>
-                        <button class="tab-btn" data-period="ranking">Ranking</button>
-                    </div>
+                <div class="tabs">
+                    <button class="tab-btn active" data-period="totais">Totais</button>
+                    <button class="tab-btn" data-period="medias">Médias</button>
+                    <button class="tab-btn" data-period="ranking">Ranking</button>
+                </div>
 
-                    <div class="period-panel active" data-period-panel="totais">
-                        <div class="turma-grid" id="relatorio-totais"></div>
-                    </div>
+                <div class="stats-grid">
+                    <article class="status-card">
+                        <span class="label-code">Status Geral</span>
+                        <h2 id="status-geral">Excelente</h2>
+                        <p id="status-geral-texto">Dados sincronizados com a API local.</p>
+                        <span class="label-code">Dados atualizados agora</span>
+                    </article>
+                    <article class="frequency-card">
+                        <span id="frequencia-media">100%</span>
+                        <small>Frequência média</small>
+                        <div class="progress-track"><div id="frequencia-barra"></div></div>
+                    </article>
+                </div>
 
-                    <div class="period-panel" data-period-panel="medias">
-                        <div class="turma-grid" id="relatorio-medias"></div>
-                    </div>
+                <div class="period-panel active" data-period-panel="totais">
+                    <h2 class="section-title">Turmas por Departamento</h2>
+                    <div class="turma-grid" id="relatorio-totais"></div>
+                </div>
 
-                    <div class="period-panel" data-period-panel="ranking">
-                        <div class="turma-grid" id="relatorio-ranking"></div>
-                    </div>
+                <div class="period-panel" data-period-panel="medias">
+                    <h2 class="section-title">Médias por Turma</h2>
+                    <div class="turma-grid" id="relatorio-medias"></div>
+                </div>
+
+                <div class="period-panel" data-period-panel="ranking">
+                    <h2 class="section-title">Alunos com Mais Faltas</h2>
+                    <div class="turma-grid" id="relatorio-ranking"></div>
                 </div>
             </section>
 
             <section class="view-panel" data-view-panel="alunos">
-                <div class="card wide">
-                    <h2>Alunos por Turma</h2>
-                    <p>Adicione ou remova alunos usando a tabela</p>
+                <div class="dashboard-heading">
+                    <h1>Alunos por Turma</h1>
+                    <p>Adicione ou remova alunos usando a tabela.</p>
+                </div>
 
-                    <div class="alunos-toolbar">
-                        <div class="form-row">
-                            <label for="turma-alunos">Turma</label>
-                            <select id="turma-alunos"></select>
-                        </div>
-                        <div class="form-row">
-                            <label for="novo-aluno">Aluno</label>
-                            <input id="novo-aluno" type="text" placeholder="Nome do aluno">
-                        </div>
-                        <div class="form-row actions">
-                            <button type="button" class="btn-add" id="btn-add-aluno">Adicionar aluno</button>
-                        </div>
+                <section class="toolbar-card alunos-toolbar">
+                    <div class="form-row">
+                        <label for="turma-alunos">Turma</label>
+                        <select id="turma-alunos"></select>
+                    </div>
+                    <div class="form-row">
+                        <label for="novo-aluno">Nome do aluno</label>
+                        <input id="novo-aluno" type="text" placeholder="Ex: João da Silva">
+                    </div>
+                    <div class="form-row actions">
+                        <button type="button" class="btn-add" id="btn-add-aluno">
+                            <span class="material-symbols-outlined" aria-hidden="true">person_add</span>
+                            Adicionar Aluno
+                        </button>
+                    </div>
+                </section>
+
+                <section class="student-section">
+                    <div class="section-row">
+                        <h2 class="section-title">Lista de Alunos</h2>
+                        <span class="pill strong" id="student-count">0 ALUNOS</span>
                     </div>
 
                     <div class="table-wrapper">
                         <table class="data-table" id="tabela-alunos">
                             <thead>
                                 <tr>
-                                    <th>Aluno</th>
+                                    <th>Nome completo</th>
                                     <th>Faltas</th>
                                     <th>Ações</th>
                                 </tr>
@@ -126,15 +170,18 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                </div>
+                    <div class="empty-state" id="empty-alunos">Nenhum aluno cadastrado nesta turma.</div>
+                </section>
             </section>
 
             <section class="view-panel" data-view-panel="config">
-                <div class="card wide">
-                    <h2>Registrar Faltas</h2>
-                    <p>Selecione a turma para visualizar os alunos disponíveis</p>
+                <div class="dashboard-heading">
+                    <h1>Registrar Faltas</h1>
+                    <p>Gerencie a frequência dos alunos de forma rápida e eficiente.</p>
+                </div>
 
-                    <form class="config-form" onsubmit="return false;">
+                <div class="absence-layout">
+                    <form class="config-form toolbar-card" onsubmit="return false;">
                         <div class="form-row">
                             <label for="turma-config">Turma</label>
                             <select id="turma-config"></select>
@@ -144,18 +191,54 @@
                             <select id="aluno-config"></select>
                         </div>
                         <div class="form-row actions">
-                            <button type="button" class="btn-add" id="btn-add-falta">Adicionar falta</button>
-                            <button type="button" class="btn-remove" id="btn-remove-falta">Retirar falta</button>
+                            <button type="button" class="btn-add" id="btn-add-falta">
+                                <span class="material-symbols-outlined" aria-hidden="true">person_add</span>
+                                Adicionar falta
+                            </button>
+                            <button type="button" class="btn-remove" id="btn-remove-falta">
+                                <span class="material-symbols-outlined" aria-hidden="true">person_remove</span>
+                                Retirar falta
+                            </button>
                         </div>
-                        <div class="helper-text" id="faltas-atual"></div>
                     </form>
+
+                    <aside class="status-stack">
+                        <div class="student-status-card">
+                            <span class="label-code">Status do Aluno</span>
+                            <div class="helper-text" id="faltas-atual">Selecione um aluno para ver os detalhes.</div>
+                        </div>
+                        <div class="tip-card">
+                            <span class="material-symbols-outlined" aria-hidden="true">info</span>
+                            <div>
+                                <strong>Atenção</strong>
+                                <p>Alunos com mais faltas deixam a turma mais abaixo na ordem de chamada.</p>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </section>
         </main>
-
     </div>
+
+    <nav class="bottom-nav" aria-label="Menu principal">
+        <a href="#" data-view="home" class="nav-link active">
+            <span class="material-symbols-outlined" aria-hidden="true">home</span>
+            <span>Início</span>
+        </a>
+        <a href="#" data-view="faltas" class="nav-link">
+            <span class="material-symbols-outlined" aria-hidden="true">person_off</span>
+            <span>Faltas</span>
+        </a>
+        <a href="#" data-view="alunos" class="nav-link">
+            <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+            <span>Turmas</span>
+        </a>
+        <a href="#" data-view="config" class="nav-link">
+            <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+            <span>Registrar</span>
+        </a>
+    </nav>
+
     <script src="scripts/dashboard.js" defer></script>
-
-
 </body>
 </html>

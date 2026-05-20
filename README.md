@@ -21,10 +21,13 @@ Projeto didatico com frontend em HTML/CSS/JavaScript e backend Flask.
   - Itens de menu nao permitidos ficam ocultos.
 
 ## Como executar localmente
-1. Instale o Flask se ainda nao estiver instalado: `pip install flask`
-2. Rode a aplicacao: `python index.py`
-3. Abra `http://127.0.0.1:5000/`
-4. Faça login e use o dashboard conforme o perfil.
+1. Instale o Python 3 se ainda nao estiver instalado.
+2. Crie um ambiente virtual: `python3 -m venv .venv`
+3. Ative o ambiente virtual: `source .venv/bin/activate`
+4. Instale as dependencias: `python3 -m pip install -r requeriments.txt`
+5. Rode a aplicacao: `python3 api/index.py`
+6. Abra `http://127.0.0.1:5000/`
+7. Faca login e use o dashboard conforme o perfil.
 
 ## Estrutura do projeto
 - `index.html`: pagina inicial.
@@ -33,7 +36,7 @@ Projeto didatico com frontend em HTML/CSS/JavaScript e backend Flask.
 - `scripts/login.js`: autenticacao contra a API.
 - `scripts/dashboard.js`: consumo da API, regras de permissao e renderizacao do painel.
 - `estilos/style.css`: estilos globais.
-- `index.py`: backend Flask, rotas HTML e API.
+- `api/index.py`: backend Flask, rotas HTML e API.
 
 ## Persistencia de dados
 - Chave de sessao no navegador: `usuarioLogado`
