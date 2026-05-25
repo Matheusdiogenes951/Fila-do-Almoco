@@ -1,5 +1,6 @@
 from copy import deepcopy
 from pathlib import Path
+from datetime import datetime
 
 from flask import Flask, jsonify, request, send_from_directory
 
@@ -45,7 +46,7 @@ def montar_turmas():
             "codigo": codigo,
             "nome": TURMA_LABELS.get(codigo, codigo),
             "alunos": [
-                {"id": f"{codigo}-{indice}", "nome": nome, "faltas": 0}
+                {"id": f"{codigo}-{indice}", "nome": nome, "faltas": 0, "data_ultima_falta": None}
                 for indice, nome in enumerate(alunos, start=1)
             ],
         }
@@ -138,7 +139,7 @@ def criar_aluno(codigo):
         return jsonify({"erro": "Nome do aluno é obrigatório"}), 400
 
     aluno_id = f"{turma['codigo']}-{len(turma['alunos']) + 1}"
-    turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0})
+    turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0, "data_ultima_falta": None})
     return jsonify({"mensagem": "Aluno adicionado com sucesso", "turma": serializar_turma(turma)}), 201
 
 @app.delete("/api/turmas/<codigo>/alunos/<aluno_id>")
@@ -168,9 +169,22 @@ def atualizar_faltas(codigo, aluno_id):
     operacao = (dados.get("operacao") or "").strip().lower()
 
     if operacao == "adicionar":
+        # Validar limite de 1 falta por dia
+        hoje = datetime.now().date().isoformat()
+        data_ultima_falta = aluno.get("data_ultima_falta")
+        
+        if data_ultima_falta == hoje:
+            return jsonify({
+                "erro": f"{aluno['nome']} ja foi marcado como faltante hoje. Um aluno so pode faltar uma vez por dia."
+            }), 400
+        
         aluno["faltas"] += 1
+        aluno["data_ultima_falta"] = hoje
     elif operacao == "remover":
         aluno["faltas"] = max(0, aluno["faltas"] - 1)
+        # Se removemos a última falta do dia, limpar a data
+        if aluno["faltas"] == 0:
+            aluno["data_ultima_falta"] = None
     else:
         return jsonify({"erro": "Operacao invalida. Use 'adicionar' ou 'remover'"}), 400
 
@@ -222,7 +236,7 @@ def criar_aluno_compat():
         return jsonify({"erro": "Nome do aluno e obrigatorio"}), 400
 
     aluno_id = f"{turma['codigo']}-{len(turma['alunos']) + 1}"
-    turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0})
+    turma["alunos"].append({"id": aluno_id, "nome": nome, "faltas": 0, "data_ultima_falta": None})
     return jsonify({"status": "sucesso", "mensagem": f"{nome} adicionado a {sala}"}), 201
 
 @app.delete("/alunos/remover/<nome>")

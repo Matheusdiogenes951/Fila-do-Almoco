@@ -1403,6 +1403,29 @@ button {
     transform: scale(0.94);
 }
 
+/* === RESPONSIVIDADE DE NAVEGAÇÃO === */
+/* Desktop: mostra menu hamburger, esconde bottom-nav */
+@media (min-width: 901px) {
+    .bottom-nav {
+        display: none;
+    }
+    
+    .btn-menu {
+        display: grid;
+    }
+}
+
+/* Mobile/Tablet: esconde menu hamburger, mostra bottom-nav */
+@media (max-width: 900px) {
+    .btn-menu {
+        display: none;
+    }
+    
+    .bottom-nav {
+        display: flex;
+    }
+}
+
 @keyframes fadeUp {
     from {
         opacity: 0;
@@ -1492,6 +1515,7 @@ button {
 
     .dashboard-container {
         padding-top: 78px;
+        padding-bottom: 90px;
     }
 
     .list-toolbar,
